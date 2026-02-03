@@ -7,4 +7,4 @@ m.fs.cooler.outlet.enth_mass.fix(m.fs.helmholtz_water.htpx(p=201325 * units.Pa,x
 m.fs.heater.heat_duty.fix(50000 * units.kW)
 ```
 
-The heater is putting in too much energy for it to be feasible
+The heater is putting in too much energy for it to be feasible.
