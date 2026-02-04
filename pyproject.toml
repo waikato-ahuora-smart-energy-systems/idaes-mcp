@@ -8,6 +8,7 @@ dependencies = [
     "coolprop>=7.2.0",
     "idaes-pse>=2.10.0",
     "ahuora-compounds",
+    "idaes-ui>=0.25.10",
 ]
 
 
