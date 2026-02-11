@@ -1,0 +1,2352 @@
+{
+    "id": 2130,
+    "name": "",
+    "description": "",
+    "dynamic": false,
+    "is_rating_mode": false,
+    "time_set": [
+        0.0
+    ],
+    "property_packages": [
+        {
+            "id": 0,
+            "type": "milk",
+            "compounds": [
+                "milk_solid",
+                "water"
+            ],
+            "phases": [
+                "Liq",
+                "Vap"
+            ]
+        },
+        {
+            "id": 1,
+            "type": "helmholtz",
+            "compounds": [
+                "water"
+            ],
+            "phases": [
+                "Liq",
+                "Vap"
+            ]
+        }
+    ],
+    "unit_models": [
+        {
+            "id": 1643423,
+            "type": "heatExchanger",
+            "name": "Heat Exchanger1",
+            "args": {
+                "hot_side": {
+                    "property_package": 0
+                },
+                "cold_side": {
+                    "property_package": 0
+                }
+            },
+            "properties": {
+                "overall_heat_transfer_coefficient": {
+                    "data": [
+                        {
+                            "id": 366384,
+                            "discrete_indexes": [],
+                            "value": [
+                                5.0
+                            ],
+                            "controlled": null,
+                            "guess": false,
+                            "constraint": null
+                        }
+                    ],
+                    "unit": "W/(m^2.K)"
+                },
+                "area": {
+                    "data": [
+                        {
+                            "id": 366385,
+                            "discrete_indexes": [],
+                            "value": 5.0,
+                            "controlled": null,
+                            "guess": false,
+                            "constraint": null
+                        }
+                    ],
+                    "unit": "m^2"
+                },
+                "heat_duty": {
+                    "data": [
+                        {
+                            "id": 366386,
+                            "discrete_indexes": [],
+                            "value": null,
+                            "controlled": null,
+                            "guess": false,
+                            "constraint": null
+                        }
+                    ],
+                    "unit": ""
+                },
+                "cold_side.deltaP_inverted": {
+                    "data": [
+                        {
+                            "id": 366387,
+                            "discrete_indexes": [],
+                            "value": [
+                                0.0
+                            ],
+                            "controlled": null,
+                            "guess": false,
+                            "constraint": null
+                        }
+                    ],
+                    "unit": "kPa"
+                },
+                "hot_side.deltaP_inverted": {
+                    "data": [
+                        {
+                            "id": 366388,
+                            "discrete_indexes": [],
+                            "value": [
+                                0.0
+                            ],
+                            "controlled": null,
+                            "guess": false,
+                            "constraint": null
+                        }
+                    ],
+                    "unit": "kPa"
+                }
+            },
+            "ports": {
+                "cold_side_inlet": {
+                    "id": 23026,
+                    "properties": {
+                        "flow_mol": {
+                            "data": [
+                                {
+                                    "id": 366390,
+                                    "discrete_indexes": [],
+                                    "value": [
+                                        756.0245268521909
+                                    ],
+                                    "controlled": null,
+                                    "guess": true,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": "mol/s"
+                        },
+                        "pressure": {
+                            "data": [
+                                {
+                                    "id": 366392,
+                                    "discrete_indexes": [],
+                                    "value": [
+                                        1.0
+                                    ],
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": "atm"
+                        },
+                        "enth_mass": {
+                            "data": [
+                                {
+                                    "id": 366395,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "enth_mol": {
+                            "data": [
+                                {
+                                    "id": 366394,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "mole_frac_comp": {
+                            "data": [
+                                {
+                                    "id": 366433,
+                                    "discrete_indexes": [
+                                        "milk_solid"
+                                    ],
+                                    "value": [
+                                        0.09
+                                    ],
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                },
+                                {
+                                    "id": 366439,
+                                    "discrete_indexes": [
+                                        "water"
+                                    ],
+                                    "value": [
+                                        0.91
+                                    ],
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": "dimensionless"
+                        },
+                        "mole_frac_phase_comp": {
+                            "data": [
+                                {
+                                    "id": 366434,
+                                    "discrete_indexes": [
+                                        "Liq",
+                                        "milk_solid"
+                                    ],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                },
+                                {
+                                    "id": 366435,
+                                    "discrete_indexes": [
+                                        "Vap",
+                                        "milk_solid"
+                                    ],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                },
+                                {
+                                    "id": 366440,
+                                    "discrete_indexes": [
+                                        "Liq",
+                                        "water"
+                                    ],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                },
+                                {
+                                    "id": 366441,
+                                    "discrete_indexes": [
+                                        "Vap",
+                                        "water"
+                                    ],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "temperature": {
+                            "data": [
+                                {
+                                    "id": 366391,
+                                    "discrete_indexes": [],
+                                    "value": [
+                                        12.0
+                                    ],
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": "degC"
+                        },
+                        "vapor_frac": {
+                            "data": [
+                                {
+                                    "id": 366393,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "flow_mass": {
+                            "data": [
+                                {
+                                    "id": 366389,
+                                    "discrete_indexes": [],
+                                    "value": [
+                                        28.179999999999996
+                                    ],
+                                    "controlled": 366390,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": "kg/s"
+                        },
+                        "flow_vol": {
+                            "data": [
+                                {
+                                    "id": 366399,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "entr_mass": {
+                            "data": [
+                                {
+                                    "id": 366397,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "entr_mol": {
+                            "data": [
+                                {
+                                    "id": 366396,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "total_energy_flow": {
+                            "data": [
+                                {
+                                    "id": 366398,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        }
+                    }
+                },
+                "hot_side_inlet": {
+                    "id": 23027,
+                    "properties": {
+                        "flow_mol": {
+                            "data": [
+                                {
+                                    "id": 366401,
+                                    "discrete_indexes": [],
+                                    "value": [
+                                        25.0
+                                    ],
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": "mol/s"
+                        },
+                        "pressure": {
+                            "data": [
+                                {
+                                    "id": 366403,
+                                    "discrete_indexes": [],
+                                    "value": [
+                                        1.0
+                                    ],
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": "atm"
+                        },
+                        "enth_mass": {
+                            "data": [
+                                {
+                                    "id": 366406,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "enth_mol": {
+                            "data": [
+                                {
+                                    "id": 366405,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "mole_frac_comp": {
+                            "data": [
+                                {
+                                    "id": 366520,
+                                    "discrete_indexes": [
+                                        "milk_solid"
+                                    ],
+                                    "value": [
+                                        0.05
+                                    ],
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                },
+                                {
+                                    "id": 366526,
+                                    "discrete_indexes": [
+                                        "water"
+                                    ],
+                                    "value": [
+                                        0.95
+                                    ],
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": "dimensionless"
+                        },
+                        "mole_frac_phase_comp": {
+                            "data": [
+                                {
+                                    "id": 366521,
+                                    "discrete_indexes": [
+                                        "Liq",
+                                        "milk_solid"
+                                    ],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                },
+                                {
+                                    "id": 366522,
+                                    "discrete_indexes": [
+                                        "Vap",
+                                        "milk_solid"
+                                    ],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                },
+                                {
+                                    "id": 366527,
+                                    "discrete_indexes": [
+                                        "Liq",
+                                        "water"
+                                    ],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                },
+                                {
+                                    "id": 366528,
+                                    "discrete_indexes": [
+                                        "Vap",
+                                        "water"
+                                    ],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "temperature": {
+                            "data": [
+                                {
+                                    "id": 366402,
+                                    "discrete_indexes": [],
+                                    "value": [
+                                        25.0
+                                    ],
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": "degC"
+                        },
+                        "vapor_frac": {
+                            "data": [
+                                {
+                                    "id": 366404,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "flow_mass": {
+                            "data": [
+                                {
+                                    "id": 366400,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "flow_vol": {
+                            "data": [
+                                {
+                                    "id": 366410,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "entr_mass": {
+                            "data": [
+                                {
+                                    "id": 366408,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "entr_mol": {
+                            "data": [
+                                {
+                                    "id": 366407,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "total_energy_flow": {
+                            "data": [
+                                {
+                                    "id": 366409,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        }
+                    }
+                },
+                "cold_side_outlet": {
+                    "id": 23028,
+                    "properties": {
+                        "flow_mol": {
+                            "data": [
+                                {
+                                    "id": 366412,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "pressure": {
+                            "data": [
+                                {
+                                    "id": 366414,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "enth_mass": {
+                            "data": [
+                                {
+                                    "id": 366417,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "enth_mol": {
+                            "data": [
+                                {
+                                    "id": 366416,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "mole_frac_comp": {
+                            "data": [
+                                {
+                                    "id": 366436,
+                                    "discrete_indexes": [
+                                        "milk_solid"
+                                    ],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                },
+                                {
+                                    "id": 366442,
+                                    "discrete_indexes": [
+                                        "water"
+                                    ],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "mole_frac_phase_comp": {
+                            "data": [
+                                {
+                                    "id": 366437,
+                                    "discrete_indexes": [
+                                        "Liq",
+                                        "milk_solid"
+                                    ],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                },
+                                {
+                                    "id": 366438,
+                                    "discrete_indexes": [
+                                        "Vap",
+                                        "milk_solid"
+                                    ],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                },
+                                {
+                                    "id": 366443,
+                                    "discrete_indexes": [
+                                        "Liq",
+                                        "water"
+                                    ],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                },
+                                {
+                                    "id": 366444,
+                                    "discrete_indexes": [
+                                        "Vap",
+                                        "water"
+                                    ],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "temperature": {
+                            "data": [
+                                {
+                                    "id": 366413,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "vapor_frac": {
+                            "data": [
+                                {
+                                    "id": 366415,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "flow_mass": {
+                            "data": [
+                                {
+                                    "id": 366411,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "flow_vol": {
+                            "data": [
+                                {
+                                    "id": 366421,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "entr_mass": {
+                            "data": [
+                                {
+                                    "id": 366419,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "entr_mol": {
+                            "data": [
+                                {
+                                    "id": 366418,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "total_energy_flow": {
+                            "data": [
+                                {
+                                    "id": 366420,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        }
+                    }
+                },
+                "hot_side_outlet": {
+                    "id": 23029,
+                    "properties": {
+                        "flow_mol": {
+                            "data": [
+                                {
+                                    "id": 366423,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "pressure": {
+                            "data": [
+                                {
+                                    "id": 366425,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "enth_mass": {
+                            "data": [
+                                {
+                                    "id": 366428,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "enth_mol": {
+                            "data": [
+                                {
+                                    "id": 366427,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "mole_frac_comp": {
+                            "data": [
+                                {
+                                    "id": 366523,
+                                    "discrete_indexes": [
+                                        "milk_solid"
+                                    ],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                },
+                                {
+                                    "id": 366529,
+                                    "discrete_indexes": [
+                                        "water"
+                                    ],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "mole_frac_phase_comp": {
+                            "data": [
+                                {
+                                    "id": 366524,
+                                    "discrete_indexes": [
+                                        "Liq",
+                                        "milk_solid"
+                                    ],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                },
+                                {
+                                    "id": 366525,
+                                    "discrete_indexes": [
+                                        "Vap",
+                                        "milk_solid"
+                                    ],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                },
+                                {
+                                    "id": 366530,
+                                    "discrete_indexes": [
+                                        "Liq",
+                                        "water"
+                                    ],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                },
+                                {
+                                    "id": 366531,
+                                    "discrete_indexes": [
+                                        "Vap",
+                                        "water"
+                                    ],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "temperature": {
+                            "data": [
+                                {
+                                    "id": 366424,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "vapor_frac": {
+                            "data": [
+                                {
+                                    "id": 366426,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "flow_mass": {
+                            "data": [
+                                {
+                                    "id": 366422,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "flow_vol": {
+                            "data": [
+                                {
+                                    "id": 366432,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "entr_mass": {
+                            "data": [
+                                {
+                                    "id": 366430,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "entr_mol": {
+                            "data": [
+                                {
+                                    "id": 366429,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "total_energy_flow": {
+                            "data": [
+                                {
+                                    "id": 366431,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        }
+                    }
+                }
+            },
+            "initial_values": {
+                "__metadata__": {
+                    "date": "2026-02-11",
+                    "time": "20:07:11.716371",
+                    "other": {},
+                    "format_version": 4,
+                    "__performance__": {
+                        "n_components": 192,
+                        "etime_make_dict": 0.0016078948974609375,
+                        "etime_write_file": 1.1920928955078125e-6
+                    }
+                },
+                "Heat Exchanger1_1643423": {
+                    "data": {
+                        "None": {
+                            "__type__": "<class 'idaes.core.base.process_block._ScalarCustomHeatExchanger'>",
+                            "__pyomo_components__": {
+                                "area": {
+                                    "data": {
+                                        "None": {
+                                            "value": 5.0,
+                                            "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                        }
+                                    },
+                                    "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                },
+                                "hot_side": {
+                                    "data": {
+                                        "None": {
+                                            "__type__": "<class 'idaes.core.base.process_block._ScalarControlVolume0DBlock'>",
+                                            "__pyomo_components__": {
+                                                "heat": {
+                                                    "data": {
+                                                        "0.0": {
+                                                            "value": -322.66600682306165,
+                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                        }
+                                                    },
+                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                },
+                                                "deltaP": {
+                                                    "data": {
+                                                        "0.0": {
+                                                            "value": 0.0,
+                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                        }
+                                                    },
+                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                },
+                                                "properties_in": {
+                                                    "data": {
+                                                        "0.0": {
+                                                            "__type__": "<class 'property_packages.modular.modular_extended.GenericExtendedStateBlockData'>",
+                                                            "__pyomo_components__": {
+                                                                "_teq": {
+                                                                    "data": {
+                                                                        "('Vap', 'Liq')": {
+                                                                            "value": 375.0876800976861,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                                },
+                                                                "flow_mol": {
+                                                                    "data": {
+                                                                        "None": {
+                                                                            "value": 25.0,
+                                                                            "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                                                },
+                                                                "pressure": {
+                                                                    "data": {
+                                                                        "None": {
+                                                                            "value": 101325.0,
+                                                                            "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                                                },
+                                                                "phase_frac": {
+                                                                    "data": {
+                                                                        "'Liq'": {
+                                                                            "value": 0.9999997880139686,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        },
+                                                                        "'Vap'": {
+                                                                            "value": 2.1198603140181465e-7,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                                },
+                                                                "_t1_Vap_Liq": {
+                                                                    "data": {
+                                                                        "None": {
+                                                                            "value": 375.0876800976861,
+                                                                            "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                                                },
+                                                                "constraints": {
+                                                                    "data": {
+                                                                        "None": {
+                                                                            "__type__": "<class 'pyomo.core.base.block.ScalarBlock'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.block.ScalarBlock'>"
+                                                                },
+                                                                "temperature": {
+                                                                    "data": {
+                                                                        "None": {
+                                                                            "value": 298.15,
+                                                                            "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                                                },
+                                                                "flow_mol_phase": {
+                                                                    "data": {
+                                                                        "'Liq'": {
+                                                                            "value": 24.999994700349216,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        },
+                                                                        "'Vap'": {
+                                                                            "value": 5.299650785045366e-6,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                                },
+                                                                "mole_frac_comp": {
+                                                                    "data": {
+                                                                        "'water'": {
+                                                                            "value": 0.95,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        },
+                                                                        "'milk_solid'": {
+                                                                            "value": 0.05,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                                },
+                                                                "_mole_frac_tbub": {
+                                                                    "data": {
+                                                                        "('Vap', 'Liq', 'water')": {
+                                                                            "value": 1.0,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        },
+                                                                        "('Vap', 'Liq', 'milk_solid')": {
+                                                                            "value": 0.0,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                                },
+                                                                "temperature_bubble": {
+                                                                    "data": {
+                                                                        "('Vap', 'Liq')": {
+                                                                            "value": 375.0876797727478,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                                },
+                                                                "mole_frac_phase_comp": {
+                                                                    "data": {
+                                                                        "('Liq', 'water')": {
+                                                                            "value": 0.9499999894006963,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        },
+                                                                        "('Vap', 'water')": {
+                                                                            "value": 1.0,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        },
+                                                                        "('Liq', 'milk_solid')": {
+                                                                            "value": 0.05000001059930381,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    "__type__": "<class 'idaes.core.base.process_block._IndexedGenericExtendedStateBlock'>"
+                                                },
+                                                "properties_out": {
+                                                    "data": {
+                                                        "0.0": {
+                                                            "__type__": "<class 'property_packages.modular.modular_extended.GenericExtendedStateBlockData'>",
+                                                            "__pyomo_components__": {
+                                                                "_teq": {
+                                                                    "data": {
+                                                                        "('Vap', 'Liq')": {
+                                                                            "value": 375.0876800969271,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                                },
+                                                                "flow_mol": {
+                                                                    "data": {
+                                                                        "None": {
+                                                                            "value": 25.0,
+                                                                            "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                                                },
+                                                                "pressure": {
+                                                                    "data": {
+                                                                        "None": {
+                                                                            "value": 101325.0,
+                                                                            "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                                                },
+                                                                "phase_frac": {
+                                                                    "data": {
+                                                                        "'Liq'": {
+                                                                            "value": 0.9999997885091261,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        },
+                                                                        "'Vap'": {
+                                                                            "value": 2.1149087394776868e-7,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                                },
+                                                                "_t1_Vap_Liq": {
+                                                                    "data": {
+                                                                        "None": {
+                                                                            "value": 375.0876800969271,
+                                                                            "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                                                },
+                                                                "constraints": {
+                                                                    "data": {
+                                                                        "None": {
+                                                                            "__type__": "<class 'pyomo.core.base.block.ScalarBlock'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.block.ScalarBlock'>"
+                                                                },
+                                                                "temperature": {
+                                                                    "data": {
+                                                                        "None": {
+                                                                            "value": 297.9698633015383,
+                                                                            "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                                                },
+                                                                "flow_mol_phase": {
+                                                                    "data": {
+                                                                        "'Liq'": {
+                                                                            "value": 24.999994712728153,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        },
+                                                                        "'Vap'": {
+                                                                            "value": 5.287271848694217e-6,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                                },
+                                                                "mole_frac_comp": {
+                                                                    "data": {
+                                                                        "'water'": {
+                                                                            "value": 0.95,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        },
+                                                                        "'milk_solid'": {
+                                                                            "value": 0.05,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                                },
+                                                                "_mole_frac_tbub": {
+                                                                    "data": {
+                                                                        "('Vap', 'Liq', 'water')": {
+                                                                            "value": 1.0,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        },
+                                                                        "('Vap', 'Liq', 'milk_solid')": {
+                                                                            "value": 0.0,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                                },
+                                                                "temperature_bubble": {
+                                                                    "data": {
+                                                                        "('Vap', 'Liq')": {
+                                                                            "value": 375.0876797727478,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                                },
+                                                                "mole_frac_phase_comp": {
+                                                                    "data": {
+                                                                        "('Liq', 'water')": {
+                                                                            "value": 0.949999989425454,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        },
+                                                                        "('Vap', 'water')": {
+                                                                            "value": 1.0,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        },
+                                                                        "('Liq', 'milk_solid')": {
+                                                                            "value": 0.05000001057454593,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    "__type__": "<class 'idaes.core.base.process_block._IndexedGenericExtendedStateBlock'>"
+                                                },
+                                                "deltaP_inverted": {
+                                                    "data": {
+                                                        "0.0": {
+                                                            "value": 0.0,
+                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                        }
+                                                    },
+                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "__type__": "<class 'idaes.core.base.process_block._ScalarControlVolume0DBlock'>"
+                                },
+                                "cold_side": {
+                                    "data": {
+                                        "None": {
+                                            "__type__": "<class 'idaes.core.base.process_block._ScalarControlVolume0DBlock'>",
+                                            "__pyomo_components__": {
+                                                "heat": {
+                                                    "data": {
+                                                        "0.0": {
+                                                            "value": 322.66600682306165,
+                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                        }
+                                                    },
+                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                },
+                                                "deltaP": {
+                                                    "data": {
+                                                        "0.0": {
+                                                            "value": 0.0,
+                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                        }
+                                                    },
+                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                },
+                                                "properties_in": {
+                                                    "data": {
+                                                        "0.0": {
+                                                            "__type__": "<class 'property_packages.modular.modular_extended.GenericExtendedStateBlockData'>",
+                                                            "__pyomo_components__": {
+                                                                "_teq": {
+                                                                    "data": {
+                                                                        "('Vap', 'Liq')": {
+                                                                            "value": 376.3455871129794,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                                },
+                                                                "flow_mol": {
+                                                                    "data": {
+                                                                        "None": {
+                                                                            "value": 756.0245268521909,
+                                                                            "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                                                },
+                                                                "pressure": {
+                                                                    "data": {
+                                                                        "None": {
+                                                                            "value": 101325.0,
+                                                                            "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                                                },
+                                                                "phase_frac": {
+                                                                    "data": {
+                                                                        "'Liq'": {
+                                                                            "value": 0.9999999055932208,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        },
+                                                                        "'Vap'": {
+                                                                            "value": 9.440677907167083e-8,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                                },
+                                                                "_t1_Vap_Liq": {
+                                                                    "data": {
+                                                                        "None": {
+                                                                            "value": 376.3455871129794,
+                                                                            "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                                                },
+                                                                "constraints": {
+                                                                    "data": {
+                                                                        "None": {
+                                                                            "__type__": "<class 'pyomo.core.base.block.ScalarBlock'>",
+                                                                            "__pyomo_components__": {}
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.block.ScalarBlock'>"
+                                                                },
+                                                                "temperature": {
+                                                                    "data": {
+                                                                        "None": {
+                                                                            "value": 285.15,
+                                                                            "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                                                },
+                                                                "flow_mol_phase": {
+                                                                    "data": {
+                                                                        "'Liq'": {
+                                                                            "value": 756.0244554783503,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        },
+                                                                        "'Vap'": {
+                                                                            "value": 0.00007137384049207078,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                                },
+                                                                "mole_frac_comp": {
+                                                                    "data": {
+                                                                        "'water'": {
+                                                                            "value": 0.91,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        },
+                                                                        "'milk_solid'": {
+                                                                            "value": 0.09,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                                },
+                                                                "_mole_frac_tbub": {
+                                                                    "data": {
+                                                                        "('Vap', 'Liq', 'water')": {
+                                                                            "value": 1.0,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        },
+                                                                        "('Vap', 'Liq', 'milk_solid')": {
+                                                                            "value": 0.0,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                                },
+                                                                "temperature_bubble": {
+                                                                    "data": {
+                                                                        "('Vap', 'Liq')": {
+                                                                            "value": 376.3455868388433,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                                },
+                                                                "mole_frac_phase_comp": {
+                                                                    "data": {
+                                                                        "('Liq', 'water')": {
+                                                                            "value": 0.9099999915033891,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        },
+                                                                        "('Vap', 'water')": {
+                                                                            "value": 1.0,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        },
+                                                                        "('Liq', 'milk_solid')": {
+                                                                            "value": 0.09000000849661093,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    "__type__": "<class 'idaes.core.base.process_block._IndexedGenericExtendedStateBlock'>"
+                                                },
+                                                "properties_out": {
+                                                    "data": {
+                                                        "0.0": {
+                                                            "__type__": "<class 'property_packages.modular.modular_extended.GenericExtendedStateBlockData'>",
+                                                            "__pyomo_components__": {
+                                                                "_teq": {
+                                                                    "data": {
+                                                                        "('Vap', 'Liq')": {
+                                                                            "value": 376.34558711299803,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                                },
+                                                                "flow_mol": {
+                                                                    "data": {
+                                                                        "None": {
+                                                                            "value": 756.024526852191,
+                                                                            "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                                                },
+                                                                "pressure": {
+                                                                    "data": {
+                                                                        "None": {
+                                                                            "value": 101325.0,
+                                                                            "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                                                },
+                                                                "phase_frac": {
+                                                                    "data": {
+                                                                        "'Liq'": {
+                                                                            "value": 0.9999999055867876,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        },
+                                                                        "'Vap'": {
+                                                                            "value": 9.441321236888842e-8,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                                },
+                                                                "_t1_Vap_Liq": {
+                                                                    "data": {
+                                                                        "None": {
+                                                                            "value": 376.34558711299803,
+                                                                            "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                                                },
+                                                                "constraints": {
+                                                                    "data": {
+                                                                        "None": {
+                                                                            "__type__": "<class 'pyomo.core.base.block.ScalarBlock'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.block.ScalarBlock'>"
+                                                                },
+                                                                "temperature": {
+                                                                    "data": {
+                                                                        "None": {
+                                                                            "value": 285.1561920441377,
+                                                                            "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                                                },
+                                                                "flow_mol_phase": {
+                                                                    "data": {
+                                                                        "'Liq'": {
+                                                                            "value": 756.0244554734868,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        },
+                                                                        "'Vap'": {
+                                                                            "value": 0.00007137870422255583,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                                },
+                                                                "mole_frac_comp": {
+                                                                    "data": {
+                                                                        "'water'": {
+                                                                            "value": 0.91,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        },
+                                                                        "'milk_solid'": {
+                                                                            "value": 0.08999999999999998,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                                },
+                                                                "_mole_frac_tbub": {
+                                                                    "data": {
+                                                                        "('Vap', 'Liq', 'water')": {
+                                                                            "value": 1.0,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        },
+                                                                        "('Vap', 'Liq', 'milk_solid')": {
+                                                                            "value": 0.0,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                                },
+                                                                "temperature_bubble": {
+                                                                    "data": {
+                                                                        "('Vap', 'Liq')": {
+                                                                            "value": 376.3455868388433,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                                },
+                                                                "mole_frac_phase_comp": {
+                                                                    "data": {
+                                                                        "('Liq', 'water')": {
+                                                                            "value": 0.90999999150281,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        },
+                                                                        "('Vap', 'water')": {
+                                                                            "value": 0.9999999999999999,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        },
+                                                                        "('Liq', 'milk_solid')": {
+                                                                            "value": 0.09000000849718989,
+                                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                                        }
+                                                                    },
+                                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    "__type__": "<class 'idaes.core.base.process_block._IndexedGenericExtendedStateBlock'>"
+                                                },
+                                                "deltaP_inverted": {
+                                                    "data": {
+                                                        "0.0": {
+                                                            "value": 0.0,
+                                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                                        }
+                                                    },
+                                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "__type__": "<class 'idaes.core.base.process_block._ScalarControlVolume0DBlock'>"
+                                },
+                                "heat_duty": {
+                                    "data": {
+                                        "0.0": {
+                                            "value": 322.66600682306165,
+                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                        }
+                                    },
+                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                },
+                                "delta_temperature_in": {
+                                    "data": {
+                                        "0.0": {
+                                            "value": 12.9938079558623,
+                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                        }
+                                    },
+                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                },
+                                "delta_temperature_out": {
+                                    "data": {
+                                        "0.0": {
+                                            "value": 12.819863301538303,
+                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                        }
+                                    },
+                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                },
+                                "_flow_mol_hot_side_inlet_ref": {
+                                    "data": {
+                                        "0.0": {
+                                            "value": 25.0,
+                                            "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                        }
+                                    },
+                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                },
+                                "_pressure_hot_side_inlet_ref": {
+                                    "data": {
+                                        "0.0": {
+                                            "value": 101325.0,
+                                            "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                        }
+                                    },
+                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                },
+                                "_flow_mol_cold_side_inlet_ref": {
+                                    "data": {
+                                        "0.0": {
+                                            "value": 756.0245268521909,
+                                            "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                        }
+                                    },
+                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                },
+                                "_flow_mol_hot_side_outlet_ref": {
+                                    "data": {
+                                        "0.0": {
+                                            "value": 25.0,
+                                            "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                        }
+                                    },
+                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                },
+                                "_pressure_cold_side_inlet_ref": {
+                                    "data": {
+                                        "0.0": {
+                                            "value": 101325.0,
+                                            "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                        }
+                                    },
+                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                },
+                                "_pressure_hot_side_outlet_ref": {
+                                    "data": {
+                                        "0.0": {
+                                            "value": 101325.0,
+                                            "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                        }
+                                    },
+                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                },
+                                "_flow_mol_cold_side_outlet_ref": {
+                                    "data": {
+                                        "0.0": {
+                                            "value": 756.024526852191,
+                                            "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                        }
+                                    },
+                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                },
+                                "_pressure_cold_side_outlet_ref": {
+                                    "data": {
+                                        "0.0": {
+                                            "value": 101325.0,
+                                            "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                        }
+                                    },
+                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                },
+                                "_temperature_hot_side_inlet_ref": {
+                                    "data": {
+                                        "0.0": {
+                                            "value": 298.15,
+                                            "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                        }
+                                    },
+                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                },
+                                "_temperature_cold_side_inlet_ref": {
+                                    "data": {
+                                        "0.0": {
+                                            "value": 285.15,
+                                            "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                        }
+                                    },
+                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                },
+                                "_temperature_hot_side_outlet_ref": {
+                                    "data": {
+                                        "0.0": {
+                                            "value": 297.9698633015383,
+                                            "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                        }
+                                    },
+                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                },
+                                "_temperature_cold_side_outlet_ref": {
+                                    "data": {
+                                        "0.0": {
+                                            "value": 285.1561920441377,
+                                            "__type__": "<class 'pyomo.core.base.var.ScalarVar'>"
+                                        }
+                                    },
+                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                },
+                                "overall_heat_transfer_coefficient": {
+                                    "data": {
+                                        "0.0": {
+                                            "value": 5.0,
+                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                        }
+                                    },
+                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                },
+                                "_mole_frac_comp_hot_side_inlet_ref": {
+                                    "data": {
+                                        "(0.0, 'water')": {
+                                            "value": 0.95,
+                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                        },
+                                        "(0.0, 'milk_solid')": {
+                                            "value": 0.05,
+                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                        }
+                                    },
+                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                },
+                                "_mole_frac_comp_cold_side_inlet_ref": {
+                                    "data": {
+                                        "(0.0, 'water')": {
+                                            "value": 0.91,
+                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                        },
+                                        "(0.0, 'milk_solid')": {
+                                            "value": 0.09,
+                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                        }
+                                    },
+                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                },
+                                "_mole_frac_comp_hot_side_outlet_ref": {
+                                    "data": {
+                                        "(0.0, 'water')": {
+                                            "value": 0.95,
+                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                        },
+                                        "(0.0, 'milk_solid')": {
+                                            "value": 0.05,
+                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                        }
+                                    },
+                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                },
+                                "_mole_frac_comp_cold_side_outlet_ref": {
+                                    "data": {
+                                        "(0.0, 'water')": {
+                                            "value": 0.91,
+                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                        },
+                                        "(0.0, 'milk_solid')": {
+                                            "value": 0.08999999999999998,
+                                            "__type__": "<class 'pyomo.core.base.var.VarData'>"
+                                        }
+                                    },
+                                    "__type__": "<class 'pyomo.core.base.var.IndexedVar'>"
+                                }
+                            }
+                        }
+                    },
+                    "__type__": "<class 'idaes.core.base.process_block._ScalarCustomHeatExchanger'>"
+                }
+            }
+        },
+        {
+            "id": 1643435,
+            "type": "direct_steam_injection",
+            "name": "Direct Steam Injection1",
+            "args": {
+                "property_package": 0,
+                "steam_property_package": 1
+            },
+            "properties": {},
+            "ports": {
+                "inlet": {
+                    "id": 23036,
+                    "properties": {}
+                },
+                "steam_inlet": {
+                    "id": 23037,
+                    "properties": {
+                        "flow_mol": {
+                            "data": [
+                                {
+                                    "id": 366544,
+                                    "discrete_indexes": [],
+                                    "value": [
+                                        10.0
+                                    ],
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": "mol/s"
+                        },
+                        "pressure": {
+                            "data": [
+                                {
+                                    "id": 366546,
+                                    "discrete_indexes": [],
+                                    "value": [
+                                        1.0
+                                    ],
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": "atm"
+                        },
+                        "enth_mass": {
+                            "data": [
+                                {
+                                    "id": 366549,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "enth_mol": {
+                            "data": [
+                                {
+                                    "id": 366548,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "mole_frac_comp": {
+                            "data": [
+                                {
+                                    "id": 366577,
+                                    "discrete_indexes": [
+                                        "water"
+                                    ],
+                                    "value": [
+                                        1.0
+                                    ],
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": "dimensionless"
+                        },
+                        "mole_frac_phase_comp": {
+                            "data": [
+                                {
+                                    "id": 366578,
+                                    "discrete_indexes": [
+                                        "Liq",
+                                        "water"
+                                    ],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                },
+                                {
+                                    "id": 366579,
+                                    "discrete_indexes": [
+                                        "Vap",
+                                        "water"
+                                    ],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "temperature": {
+                            "data": [
+                                {
+                                    "id": 366545,
+                                    "discrete_indexes": [],
+                                    "value": [
+                                        119.99999999999977
+                                    ],
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": "degC"
+                        },
+                        "vapor_frac": {
+                            "data": [
+                                {
+                                    "id": 366547,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "flow_mass": {
+                            "data": [
+                                {
+                                    "id": 366543,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "flow_vol": {
+                            "data": [
+                                {
+                                    "id": 366553,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "entr_mass": {
+                            "data": [
+                                {
+                                    "id": 366551,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "entr_mol": {
+                            "data": [
+                                {
+                                    "id": 366550,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "total_energy_flow": {
+                            "data": [
+                                {
+                                    "id": 366552,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        }
+                    }
+                },
+                "outlet": {
+                    "id": 23038,
+                    "properties": {
+                        "flow_mol": {
+                            "data": [
+                                {
+                                    "id": 366555,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "pressure": {
+                            "data": [
+                                {
+                                    "id": 366557,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "enth_mass": {
+                            "data": [
+                                {
+                                    "id": 366560,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "enth_mol": {
+                            "data": [
+                                {
+                                    "id": 366559,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "mole_frac_comp": {
+                            "data": [
+                                {
+                                    "id": 366571,
+                                    "discrete_indexes": [
+                                        "milk_solid"
+                                    ],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                },
+                                {
+                                    "id": 366572,
+                                    "discrete_indexes": [
+                                        "water"
+                                    ],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "mole_frac_phase_comp": {
+                            "data": [
+                                {
+                                    "id": 366573,
+                                    "discrete_indexes": [
+                                        "Liq",
+                                        "milk_solid"
+                                    ],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                },
+                                {
+                                    "id": 366574,
+                                    "discrete_indexes": [
+                                        "Liq",
+                                        "water"
+                                    ],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                },
+                                {
+                                    "id": 366575,
+                                    "discrete_indexes": [
+                                        "Vap",
+                                        "milk_solid"
+                                    ],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                },
+                                {
+                                    "id": 366576,
+                                    "discrete_indexes": [
+                                        "Vap",
+                                        "water"
+                                    ],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "temperature": {
+                            "data": [
+                                {
+                                    "id": 366556,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "vapor_frac": {
+                            "data": [
+                                {
+                                    "id": 366558,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "flow_mass": {
+                            "data": [
+                                {
+                                    "id": 366554,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "flow_vol": {
+                            "data": [
+                                {
+                                    "id": 366564,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "entr_mass": {
+                            "data": [
+                                {
+                                    "id": 366562,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "entr_mol": {
+                            "data": [
+                                {
+                                    "id": 366561,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        },
+                        "total_energy_flow": {
+                            "data": [
+                                {
+                                    "id": 366563,
+                                    "discrete_indexes": [],
+                                    "value": null,
+                                    "controlled": null,
+                                    "guess": false,
+                                    "constraint": null
+                                }
+                            ],
+                            "unit": ""
+                        }
+                    }
+                }
+            },
+            "initial_values": null
+        }
+    ],
+    "arcs": [
+        {
+            "id": 1643426,
+            "source": 23028,
+            "destination": 23036,
+            "tear_guess": null
+        }
+    ],
+    "machineLearningBlock": null,
+    "expressions": [],
+    "optimizations": [],
+    "disable_initialization": false,
+    "solver_option": "ipopt"
+}
