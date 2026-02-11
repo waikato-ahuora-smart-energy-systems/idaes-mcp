@@ -9,6 +9,8 @@ from property_packages.build_package import build_package
 from idaes.core.util.model_statistics import degrees_of_freedom
 import math
 
+from idaes_mcp.server import start_mcp_server
+
 m = ConcreteModel()
 m.fs = FlowsheetBlock(dynamic=False)
 m.fs.properties = build_package("helmholtz",["water"],["Liq","Vap"])
@@ -38,12 +40,14 @@ dt.display_underconstrained_set()
 dt.display_overconstrained_set()
 
 
-iscale.calculate_scaling_factors(m)
+# iscale.calculate_scaling_factors(m)
 
 
-solver = pyo.SolverFactory("ipopt")
-solver.options = {"nlp_scaling_method": "user-scaling"}
-solver.solve(m, tee=True)
+# solver = pyo.SolverFactory("ipopt")
+# solver.options = {"nlp_scaling_method": "user-scaling"}
+# solver.solve(m, tee=True)
+
+start_mcp_server(m, host="127.0.0.1", port=8005)
 
 print(pyo.value(m.fs.valve.Cv))
 print(pyo.value(m.fs.valve.valve_opening[0]))

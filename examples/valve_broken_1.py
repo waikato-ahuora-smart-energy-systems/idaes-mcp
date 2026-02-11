@@ -9,6 +9,8 @@ from property_packages.build_package import build_package
 from idaes.core.util.model_statistics import degrees_of_freedom
 import math
 
+from idaes_mcp.server import start_mcp_server
+
 m = ConcreteModel()
 m.fs = FlowsheetBlock(dynamic=False)
 m.fs.properties = build_package("helmholtz",["water"],["Liq","Vap"])
@@ -21,10 +23,13 @@ m.fs.valve.outlet.pressure[0].fix(101325)
 m.fs.valve.valve_opening.fix(0.5)
 print("Degrees of freedom =", degrees_of_freedom(m))
 
-iscale.calculate_scaling_factors(m)
-m.fs.valve.initialize(outlvl=1)
+# iscale.calculate_scaling_factors(m)
+# m.fs.valve.initialize(outlvl=1)
 
 
-solver = pyo.SolverFactory("ipopt")
-solver.options = {"nlp_scaling_method": "user-scaling"}
-solver.solve(m, tee=True)
+# solver = pyo.SolverFactory("ipopt")
+# solver.options = {"nlp_scaling_method": "user-scaling"}
+# solver.solve(m, tee=True)
+
+# print("Starting MCP server at http://127.0.0.1:8005/mcp")
+# start_mcp_server(m, host="127.0.0.1", port=8005)

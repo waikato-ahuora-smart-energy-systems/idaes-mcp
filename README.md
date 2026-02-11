@@ -20,10 +20,34 @@ idaes get-extensions
 
 # Usage
 
+This MVP starts an MCP-over-HTTP server from the same process that owns the model.
 
 ```bash
-uv run main.py # or whatever file you want to run
+uv run main.py
 ```
+
+The demo entrypoint builds a tiny model and starts the server at:
+
+```text
+http://127.0.0.1:8000/mcp
+```
+
+In your own script, build `m` first and then call:
+
+```python
+from idaes_mcp.server import start_mcp_server
+
+start_mcp_server(m, host="127.0.0.1", port=8000)
+```
+
+Available tools:
+
+- `idaes.list_models`
+- `idaes.model_summary`
+- `idaes.list_variables`
+- `idaes.list_constraints`
+- `idaes.top_constraint_residuals`
+- `idaes.run_diagnostics`
 
 # Examples
 

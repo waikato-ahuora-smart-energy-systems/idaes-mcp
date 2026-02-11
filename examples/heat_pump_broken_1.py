@@ -43,6 +43,8 @@ import idaes.logger as idaeslog
 # CoolProp is used to figure out the saturation pressure of water at the various temperatures
 import CoolProp.CoolProp as CP
 
+from idaes_mcp.server import start_mcp_server
+
 #Constructing the Flowsheet
 m = ConcreteModel()
 m.fs = FlowsheetBlock(dynamic=False)
@@ -206,20 +208,23 @@ tear_guesses = {
 # Pass the tear_guess to the SD tool
 seq.set_guesses_for(m.fs.compressor.inlet, tear_guesses)
 
-#Unit initialisation function
-def function(unit):
-    unit.initialize(outlvl=idaeslog.INFO)
+report_statistics(m)
 
-seq.run(m, function)
+# #Unit initialisation function
+# def function(unit):
+#     unit.initialize(outlvl=idaeslog.INFO)
+
+# try:
+#     seq.run(m, function)
+#     #Create solver object
+#     solver = SolverFactory("ipopt")
+#     solver.options = {"nlp_scaling_method": "user-scaling"}
+#     solver.solve(m, tee=True)
+# except:
+#     print("Error: The model has an error")
 
 
 
 
 
-#Create solver object
-from idaes.core.solvers import get_solver
 
-solver = get_solver()
-
-# Solve the model
-results = solver.solve(m, tee=True)
