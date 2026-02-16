@@ -42,12 +42,41 @@ start_mcp_server(m, host="127.0.0.1", port=8000)
 
 Available tools:
 
-- `idaes.list_models`
-- `idaes.model_summary`
-- `idaes.list_variables`
-- `idaes.list_constraints`
-- `idaes.top_constraint_residuals`
-- `idaes.run_diagnostics`
+**Model overview**
+- `idaes.list_models` – Top-level blocks (e.g. `fs`) and, if present, blocks under `fs`
+- `idaes.model_summary` – DOF, variable/constraint counts, fixed variable count
+- `idaes.list_variables` – List/filter variables (value, bounds, fixed)
+- `idaes.list_constraints` – List/filter constraints (bounds, active)
+- `idaes.fixed_variable_summary` – Fixed variables with name, value, and block (quick view of specs for diagnosis)
+- `idaes.flowsheet_report` – Unit `report()` output for flowsheet blocks
+
+**Structural and numerical diagnostics**
+- `idaes.run_diagnostics` – Structural report + under/over-constrained sets; use `include_numerical=True` after solve
+- `idaes.report_numerical_issues` – Full numerical report (scaling, residuals, Jacobian, etc.; requires a solution)
+- `idaes.top_constraint_residuals` – Largest constraint violations (quick feasibility triage)
+- `idaes.dulmage_mendelsohn_partition` – Structured under/over-constrained variable and constraint sets (by block)
+- `idaes.diagnostics_display` – Run a specific display (e.g. `large_residuals`, `inconsistent_units`, `near_parallel_constraints`); see tool description for `display_kind` options
+
+**Advanced / high-insight**
+- `idaes.infeasibility_explanation` – Why the model is infeasible (relaxations + minimal infeasible set); runs extra solves
+- `idaes.near_parallel_jacobian` – Near-parallel constraint rows or variable columns (degeneracy / redundancy)
+- `idaes.ill_conditioning_certificate` – Constraints/variables contributing to ill-conditioning (Klotz-style)
+- `idaes.svd_underdetermined` – SVD-based underdetermined variables/constraints (small singular values)
+- `idaes.degeneracy_report` – Irreducible degenerate sets (IDS); requires MILP solver (e.g. SCIP)
+
+## Model diagnostics workflow (for real insight)
+
+1. **Structural (no solution needed)**  
+   `run_diagnostics()` → fix DOF, then use `dulmage_mendelsohn_partition()` to see exactly which variables/constraints are under- or over-constrained. Follow up with `diagnostics_display("inconsistent_units")`, `diagnostics_display("potential_evaluation_errors")`, etc. as suggested in the report.
+
+2. **After initialize/solve**  
+   `run_diagnostics(include_numerical=True)` or `report_numerical_issues()`. Use `top_constraint_residuals` for quick feasibility check and `diagnostics_display("large_residuals")` for details.
+
+3. **If solver says infeasible**  
+   `infeasibility_explanation()` to get relaxations and a minimal infeasible set (conflicting constraints/bounds).
+
+4. **Scaling / degeneracy**  
+   `near_parallel_jacobian(direction="row")` or `direction="column"`, `ill_conditioning_certificate()`, then `svd_underdetermined()` and optionally `degeneracy_report()` (needs SCIP or another MILP solver).
 
 # Examples
 

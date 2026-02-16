@@ -4,6 +4,7 @@ import io
 from ahuora_builder.flowsheet_manager import FlowsheetManager
 from ahuora_builder_types.flowsheet_schema import FlowsheetSchema
 from idaes.core.util.model_diagnostics import DiagnosticsToolbox
+from idaes_mcp.server import start_mcp_server
 
 
 INPUT_FILE = "json/model.json"
@@ -34,3 +35,6 @@ with open(os.path.join(__location__, INPUT_FILE), 'r') as file:
     dt = DiagnosticsToolbox(m)
 
     dt.display_constraints_with_large_residuals()
+
+    print("Starting MCP server at http://127.0.0.1:8005/mcp")
+    start_mcp_server(m, host="127.0.0.1", port=8005, allow_remote_hosts=True)

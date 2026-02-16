@@ -1,12 +1,18 @@
 import io
+import os
 from contextlib import redirect_stdout
 from math import isfinite
 from typing import Any
 
 from idaes.core import FlowsheetBlock
 from idaes.core.util import DiagnosticsToolbox
+from idaes.core.util.model_diagnostics import (
+    check_parallel_jacobian,
+    compute_ill_conditioning_certificate,
+)
 from idaes.core.util.model_statistics import degrees_of_freedom
 from mcp.server.fastmcp import FastMCP
+from mcp.server.transport_security import TransportSecuritySettings
 from pyomo.environ import Block, Constraint, Var, value
 
 def _safe_float(raw: Any) -> float | None:
@@ -58,13 +64,39 @@ def _paginate(items: list[dict[str, Any]], limit: int, offset: int) -> dict[str,
     }
 
 
-def start_mcp_server(m: Any, host: str = "127.0.0.1", port: int = 8005) -> None:
+def start_mcp_server(
+    m: Any,
+    host: str = "127.0.0.1",
+    port: int = 8005,
+    allow_remote_hosts: bool = False,
+) -> None:
     """Start the IDAES MCP server and register model inspection tools.
 
     The server exposes read-only diagnostics and model introspection helpers over
     MCP streamable HTTP transport.
+
+    Args:
+        m: The Pyomo/IDAES model to inspect.
+        host: Bind address (use 0.0.0.0 to accept external connections).
+        port: Port to listen on.
+        allow_remote_hosts: If True, disable DNS rebinding protection so the server
+            accepts requests forwarded via ngrok or other tunnels (Host header will
+            be the tunnel hostname, e.g. xxx.ngrok-free.app). Set True when using
+            ChatGPT custom connectors or Grok with ngrok. You can also set env var
+            MCP_ALLOW_REMOTE_HOSTS=1 instead of passing True.
     """
-    server = FastMCP("idaes-mcp", host=host, port=port, streamable_http_path="/mcp")
+    transport_security = None
+    if allow_remote_hosts or os.environ.get("MCP_ALLOW_REMOTE_HOSTS", "").lower() in ("1", "true", "yes"):
+        transport_security = TransportSecuritySettings(
+            enable_dns_rebinding_protection=False,
+        )
+    server = FastMCP(
+        "idaes-mcp",
+        host=host,
+        port=port,
+        streamable_http_path="/mcp",
+        transport_security=transport_security,
+    )
 
     @server.tool(name="idaes.model_summary")
     def model_summary() -> dict[str, Any]:
@@ -85,6 +117,70 @@ def start_mcp_server(m: Any, host: str = "127.0.0.1", port: int = 8005) -> None:
             "n_constraints": len(constraints),
             "n_fixed_variables": sum(1 for variable in variables if variable.fixed),
         }
+
+    @server.tool(name="idaes.list_models")
+    def list_models() -> dict[str, Any]:
+        """List top-level blocks (sub-models) in the Pyomo model.
+
+        Use this to see the model structure (e.g. m.fs, m.unit) before
+        listing variables/constraints or running diagnostics.
+
+        Returns:
+            A dictionary with:
+            - block_names: List of top-level component names that are Blocks.
+            - block_names_with_fs: If 'fs' exists, also lists direct child block names under fs.
+        """
+        block_names = [
+            c.name for c in m.component_objects(Block, descend_into=False)
+        ]
+        out: dict[str, Any] = {"block_names": block_names}
+        fs = getattr(m, "fs", None)
+        if fs is not None and isinstance(fs, Block):
+            out["block_names_with_fs"] = [
+                c.name for c in fs.component_objects(Block, descend_into=False)
+            ]
+        return out
+
+    @server.tool(name="idaes.fixed_variable_summary")
+    def fixed_variable_summary(
+        pattern: str | None = None,
+        limit: int = 300,
+    ) -> dict[str, Any]:
+        """List fixed variables with their values for quick diagnosis.
+
+        Use this to see specs at a glance (e.g. inlet/outlet T and P, heat_duty)
+        so an AI can mirror explanations like 'inlet is 120°C', 'outlet 88°C',
+        'heater duty fixed at 50000 kW' without scanning all variables.
+
+        Args:
+            pattern: Case-insensitive substring filter for variable names.
+            limit: Max number of rows (clamped to [1, 500]).
+
+        Returns:
+            A dictionary with:
+            - items: List of {name, value, block} for fixed variables (block = first two path segments, e.g. fs.valve).
+            - count: Number of items returned.
+            - total: Total fixed variables before limit.
+        """
+        safe_limit = max(1, min(int(limit), 500))
+        rows: list[dict[str, Any]] = []
+        for variable in m.component_data_objects(Var, descend_into=True):
+            if not variable.fixed:
+                continue
+            name = variable.name
+            if not _matches_pattern(name, pattern):
+                continue
+            parts = name.split(".")
+            block = ".".join(parts[:2]) if len(parts) >= 2 else (parts[0] if parts else "")
+            rows.append({
+                "name": name,
+                "value": _safe_value(variable),
+                "block": block,
+            })
+        rows.sort(key=lambda item: (item["block"], item["name"]))
+        total = len(rows)
+        page = rows[:safe_limit]
+        return {"items": page, "count": len(page), "total": total}
 
     @server.tool(name="idaes.list_variables")
     def list_variables(
@@ -216,18 +312,22 @@ def start_mcp_server(m: Any, host: str = "127.0.0.1", port: int = 8005) -> None:
         return {"items": rows[:safe_n], "count": min(len(rows), safe_n), "total": len(rows)}
 
     @server.tool(name="idaes.run_diagnostics")
-    def run_diagnostics() -> dict[str, Any]:
-        """Run IDAES structural diagnostics and return captured text output.
+    def run_diagnostics(include_numerical: bool = False) -> dict[str, Any]:
+        """Run IDAES diagnostics and return captured text output.
 
-        This tool captures standard output from:
+        Always runs structural checks (no solution required):
         - report_structural_issues()
         - display_underconstrained_set()
         - display_overconstrained_set()
+
+        If include_numerical is True, also runs report_numerical_issues().
+        Numerical checks require at least a partial solution; run after solve/initialize.
 
         Returns:
             A dictionary with:
             - headline: First line of diagnostic output.
             - report_text: Full captured diagnostic text.
+            - included_numerical: Whether numerical report was included.
         """
         diagnostics = DiagnosticsToolbox(m)
         buffer = io.StringIO()
@@ -235,11 +335,253 @@ def start_mcp_server(m: Any, host: str = "127.0.0.1", port: int = 8005) -> None:
             diagnostics.report_structural_issues()
             diagnostics.display_underconstrained_set()
             diagnostics.display_overconstrained_set()
+            if include_numerical:
+                diagnostics.report_numerical_issues()
         text = buffer.getvalue().strip()
         if not text:
             text = "Diagnostics completed with no text output."
         headline = text.splitlines()[0]
-        return {"headline": headline, "report_text": text}
+        return {
+            "headline": headline,
+            "report_text": text,
+            "included_numerical": include_numerical,
+        }
+
+    @server.tool(name="idaes.report_numerical_issues")
+    def report_numerical_issues() -> dict[str, Any]:
+        """Run IDAES numerical diagnostics (requires at least a partial solution).
+
+        Checks scaling, bounds, residuals, Jacobian, parallel rows/columns, etc.
+        Run after initialize/solve. Use after resolving structural issues.
+
+        Returns:
+            A dictionary with report_text (captured output).
+        """
+        diagnostics = DiagnosticsToolbox(m)
+        buffer = io.StringIO()
+        with redirect_stdout(buffer):
+            diagnostics.report_numerical_issues()
+        text = buffer.getvalue().strip()
+        return {"report_text": text or "No numerical issues reported."}
+
+    @server.tool(name="idaes.infeasibility_explanation")
+    def infeasibility_explanation(tee: bool = False) -> dict[str, Any]:
+        """Explain why the model may be infeasible (relaxations + minimal infeasible set).
+
+        Runs IDAES compute_infeasibility_explanation: finds constraint/bound
+        relaxations that yield feasibility and attempts a Minimal Infeasible Set (MIS).
+        Expensive (multiple solves). Use when the solver reports infeasible.
+
+        Args:
+            tee: If True, include solver log in output (noisier).
+
+        Returns:
+            A dictionary with report_text (explanation). On error, error message.
+        """
+        diagnostics = DiagnosticsToolbox(m)
+        buffer = io.StringIO()
+        try:
+            with redirect_stdout(buffer):
+                diagnostics.compute_infeasibility_explanation(stream=buffer, tee=tee)
+            text = buffer.getvalue().strip()
+            return {"report_text": text or "Infeasibility explanation produced no output."}
+        except Exception as e:
+            return {"error": str(e), "report_text": buffer.getvalue().strip()}
+
+    @server.tool(name="idaes.dulmage_mendelsohn_partition")
+    def dulmage_mendelsohn_partition() -> dict[str, Any]:
+        """Return Dulmage–Mendelsohn partition: under- and over-constrained subproblems.
+
+        Structured data (not just text): use to see exactly which variables/constraints
+        are in the under-constrained set (need more specs) vs over-constrained set
+        (redundant or conflicting). Essential for debugging DOF and structural singularity.
+
+        Returns:
+            A dictionary with:
+            - under_constrained_variables: List of variable name lists per block.
+            - under_constrained_constraints: List of constraint name lists per block.
+            - over_constrained_variables: List of variable name lists per block.
+            - over_constrained_constraints: List of constraint name lists per block.
+        """
+        diagnostics = DiagnosticsToolbox(m)
+        try:
+            u_vars, u_cons, o_vars, o_cons = diagnostics.get_dulmage_mendelsohn_partition()
+        except Exception as e:
+            return {"error": str(e)}
+
+        def names(component_lists: Any) -> list[list[str]]:
+            return [[getattr(c, "name", str(c)) for c in group] for group in component_lists]
+
+        return {
+            "under_constrained_variables": names(u_vars),
+            "under_constrained_constraints": names(u_cons),
+            "over_constrained_variables": names(o_vars),
+            "over_constrained_constraints": names(o_cons),
+        }
+
+    _DIAGNOSTICS_DISPLAY_METHODS = {
+        "large_residuals": "display_constraints_with_large_residuals",
+        "canceling_terms": "display_constraints_with_canceling_terms",
+        "mismatched_terms": "display_constraints_with_mismatched_terms",
+        "inconsistent_units": "display_components_with_inconsistent_units",
+        "potential_evaluation_errors": "display_potential_evaluation_errors",
+        "external_variables": "display_external_variables",
+        "unused_variables": "display_unused_variables",
+        "no_free_variables": "display_constraints_with_no_free_variables",
+        "near_parallel_constraints": "display_near_parallel_constraints",
+        "near_parallel_variables": "display_near_parallel_variables",
+        "variables_at_bounds": "display_variables_at_or_outside_bounds",
+        "variables_near_bounds": "display_variables_near_bounds",
+        "variables_fixed_to_zero": "display_variables_fixed_to_zero",
+        "variables_extreme_values": "display_variables_with_extreme_values",
+        "variables_none_value": "display_variables_with_none_value",
+        "variables_near_zero": "display_variables_with_value_near_zero",
+        "extreme_jacobian_constraints": "display_constraints_with_extreme_jacobians",
+        "extreme_jacobian_variables": "display_variables_with_extreme_jacobians",
+        "extreme_jacobian_entries": "display_extreme_jacobian_entries",
+    }
+
+    @server.tool(name="idaes.diagnostics_display")
+    def diagnostics_display(display_kind: str) -> dict[str, Any]:
+        """Run a specific DiagnosticsToolbox display method and return its output.
+
+        Use for targeted insight after report_structural_issues or report_numerical_issues
+        suggest next steps. display_kind must be one of: large_residuals, canceling_terms,
+        mismatched_terms, inconsistent_units, potential_evaluation_errors, external_variables,
+        unused_variables, no_free_variables, near_parallel_constraints, near_parallel_variables,
+        variables_at_bounds, variables_near_bounds, variables_fixed_to_zero, variables_extreme_values,
+        variables_none_value, variables_near_zero, extreme_jacobian_constraints, extreme_jacobian_variables,
+        extreme_jacobian_entries.
+
+        Returns:
+            A dictionary with report_text (captured output). On error, error key.
+        """
+        method_name = _DIAGNOSTICS_DISPLAY_METHODS.get(display_kind)
+        if not method_name:
+            return {
+                "error": f"Unknown display_kind. Choose from: {list(_DIAGNOSTICS_DISPLAY_METHODS.keys())}",
+            }
+        diagnostics = DiagnosticsToolbox(m)
+        method = getattr(diagnostics, method_name, None)
+        if method is None:
+            return {"error": f"DiagnosticsToolbox has no method {method_name}"}
+        buffer = io.StringIO()
+        try:
+            with redirect_stdout(buffer):
+                method(stream=buffer)
+            text = buffer.getvalue().strip()
+            return {"report_text": text or f"{display_kind}: no output."}
+        except Exception as e:
+            return {"error": str(e), "report_text": buffer.getvalue().strip()}
+
+    @server.tool(name="idaes.near_parallel_jacobian")
+    def near_parallel_jacobian(
+        direction: str = "row",
+        tolerance: float = 0.0001,
+    ) -> dict[str, Any]:
+        """Find near-parallel rows (constraints) or columns (variables) in the Jacobian.
+
+        Parallel rows/columns indicate possible degeneracy or redundant constraints/variables.
+        Based on Klotz, INFORMS 2014.
+
+        Args:
+            direction: 'row' for constraints (default), 'column' for variables.
+            tolerance: Cosine similarity tolerance (default 0.0001).
+
+        Returns:
+            A dictionary with pairs: list of 2-tuples of component names.
+        """
+        try:
+            pairs = check_parallel_jacobian(m, tolerance=tolerance, direction=direction)
+            return {
+                "pairs": [[p[0].name, p[1].name] for p in pairs],
+                "count": len(pairs),
+                "direction": direction,
+            }
+        except Exception as e:
+            return {"error": str(e), "pairs": [], "count": 0}
+
+    @server.tool(name="idaes.ill_conditioning_certificate")
+    def ill_conditioning_certificate(
+        direction: str = "row",
+        target_feasibility_tol: float = 1e-6,
+        ratio_cutoff: float = 0.0001,
+    ) -> dict[str, Any]:
+        """Identify constraints (rows) or variables (columns) contributing to ill-conditioning.
+
+        Returns certificate strings pointing to problematic components. Based on Klotz, INFORMS 2014.
+
+        Args:
+            direction: 'row' (constraints) or 'column' (variables).
+            target_feasibility_tol: Feasibility tolerance for the certificate problem.
+            ratio_cutoff: Cutoff for reporting.
+
+        Returns:
+            A dictionary with certificate_strings (list) and optional error.
+        """
+        try:
+            cert = compute_ill_conditioning_certificate(
+                m,
+                target_feasibility_tol=target_feasibility_tol,
+                ratio_cutoff=ratio_cutoff,
+                direction=direction,
+            )
+            return {"certificate_strings": list(cert), "count": len(cert)}
+        except Exception as e:
+            return {"error": str(e), "certificate_strings": [], "count": 0}
+
+    @server.tool(name="idaes.svd_underdetermined")
+    def svd_underdetermined(
+        number_of_smallest: int = 5,
+    ) -> dict[str, Any]:
+        """Run SVD analysis and return underdetermined variables/constraints (small singular values).
+
+        Identifies scaling/rank-deficiency: constraints and variables associated with
+        the smallest singular values. Expensive on large models.
+
+        Args:
+            number_of_smallest: Number of smallest singular values to consider (default 5).
+
+        Returns:
+            A dictionary with report_text (captured output). On error, error key.
+        """
+        diagnostics = DiagnosticsToolbox(m)
+        buffer = io.StringIO()
+        try:
+            svd = diagnostics.prepare_svd_toolbox(
+                number_of_smallest_singular_values=number_of_smallest,
+            )
+            with redirect_stdout(buffer):
+                svd.run_svd_analysis()
+                svd.display_underdetermined_variables_and_constraints(stream=buffer)
+            text = buffer.getvalue().strip()
+            return {"report_text": text or "SVD produced no output."}
+        except Exception as e:
+            return {"error": str(e), "report_text": buffer.getvalue().strip()}
+
+    @server.tool(name="idaes.degeneracy_report")
+    def degeneracy_report(tee: bool = False) -> dict[str, Any]:
+        """Find and report Irreducible Degenerate Sets (IDS) via Degeneracy Hunter.
+
+        Requires an MILP solver (e.g. SCIP). IDs are minimal sets of constraints that
+        are linearly dependent; fixing them helps resolve degeneracy.
+
+        Args:
+            tee: If True, include solver log in output.
+
+        Returns:
+            A dictionary with report_text. On error (e.g. no solver), error key.
+        """
+        diagnostics = DiagnosticsToolbox(m)
+        buffer = io.StringIO()
+        try:
+            hunter = diagnostics.prepare_degeneracy_hunter()
+            with redirect_stdout(buffer):
+                hunter.report_irreducible_degenerate_sets(stream=buffer, tee=tee)
+            text = buffer.getvalue().strip()
+            return {"report_text": text or "Degeneracy Hunter produced no output."}
+        except Exception as e:
+            return {"error": str(e), "report_text": buffer.getvalue().strip()}
 
     @server.tool(name="idaes.flowsheet_report")
     def flowsheet_report() -> dict[str, Any]:
