@@ -5,6 +5,7 @@ from ahuora_builder.flowsheet_manager import FlowsheetManager
 from ahuora_builder_types.flowsheet_schema import FlowsheetSchema
 from idaes.core.util.model_diagnostics import DiagnosticsToolbox
 from idaes_mcp.server import start_mcp_server
+from harden_flowsheet import harden_model
 
 
 INPUT_FILE = "json/model.json"
@@ -29,9 +30,9 @@ with open(os.path.join(__location__, INPUT_FILE), 'r') as file:
         print(e)
     flowsheet.diagnose_problems()
     
-
+    
     m = flowsheet.model
-
+    harden_model(m)
     dt = DiagnosticsToolbox(m)
 
     dt.display_constraints_with_large_residuals()
