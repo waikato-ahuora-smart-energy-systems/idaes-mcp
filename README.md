@@ -64,6 +64,14 @@ Available tools:
 - `idaes.svd_underdetermined` – SVD-based underdetermined variables/constraints (small singular values)
 - `idaes.degeneracy_report` – Irreducible degenerate sets (IDS); requires MILP solver (e.g. SCIP)
 
+**Solve**
+- `idaes.solve_flowsheet` – Solve the whole flowsheet (current model) with ipopt or another solver; returns success, termination_condition, message. Solution stays in the model.
+
+**Mutation / parameter sweep (test multiple values)**
+- `idaes.convergence_analysis` – Parameter sweep over input ranges (UniformSampling); runs model at each sample, returns iterations/time/numerical_issues per point (sequential).
+- `idaes.solve_one_point` – Set given variables to values, solve once, restore state; returns success and termination_condition (for testing a single operating point).
+
+
 ## Model diagnostics workflow (for real insight)
 
 1. **Structural (no solution needed)**  

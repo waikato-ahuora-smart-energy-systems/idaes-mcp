@@ -7,10 +7,15 @@ from typing import Any
 from idaes.core import FlowsheetBlock
 from idaes.core.util import DiagnosticsToolbox
 from idaes.core.util.model_diagnostics import (
+    IpoptConvergenceAnalysis,
     check_parallel_jacobian,
     compute_ill_conditioning_certificate,
 )
 from idaes.core.util.model_statistics import degrees_of_freedom
+from idaes.core.util.parameter_sweep import ParameterSweepSpecification
+from idaes.core.surrogate.pysmo.sampling import UniformSampling
+from pyomo.environ import SolverFactory
+from pyomo.environ import check_optimal_termination
 from mcp.server.fastmcp import FastMCP
 from mcp.server.transport_security import TransportSecuritySettings
 from pyomo.environ import Block, Constraint, Var, value
@@ -612,5 +617,165 @@ def start_mcp_server(
         if not text:
             text = "Flowsheet report produced no output."
         return {"report_text": text}
+
+    @server.tool(name="idaes.convergence_analysis")
+    def convergence_analysis(
+        inputs: list[dict[str, Any]],
+        sample_size: list[int],
+    ) -> dict[str, Any]:
+        """Run IDAES IpoptConvergenceAnalysis: parameter sweep over given inputs and report convergence per point.
+
+        Uses UniformSampling over [lower, upper] for each input. Runs the model at each sample point and reports iterations, time, and numerical issues. Runs sequentially (no parallel). Use to test multiple values and see where the model solves well or fails.
+
+        Args:
+            inputs: List of dicts, each with keys pyomo_path (str), lower (float), upper (float), and optional name (str). Example: [{"pyomo_path": "m.fs.unit.inlet.flow_mol[0]", "lower": 1, "upper": 20, "name": "flow"}].
+            sample_size: For UniformSampling, list of ints: number of points per input (e.g. [3, 2] for 3×2 = 6 samples with 2 inputs).
+
+        Returns:
+            report_text: Summary from report_convergence_summary.
+            results_summary: {total_samples, success_count, results_per_sample: [{iters, time, numerical_issues}, ...]}.
+            On error: error key.
+        """
+        if len(inputs) != len(sample_size):
+            return {"error": "inputs and sample_size length must match (one sample_size per input)."}
+        try:
+            spec = ParameterSweepSpecification()
+            for inp in inputs:
+                path = inp.get("pyomo_path")
+                lo = float(inp.get("lower"))
+                up = float(inp.get("upper"))
+                name = inp.get("name", path)
+                if path is None or lo is None or up is None:
+                    return {"error": "Each input must have pyomo_path, lower, upper."}
+                spec.add_sampled_input(path, lo, up, name=name)
+            spec.set_sampling_method(UniformSampling)
+            spec.set_sample_size(sample_size)
+            spec.generate_samples()
+        except Exception as e:
+            return {"error": str(e)}
+        try:
+            analysis = IpoptConvergenceAnalysis(m, input_specification=spec)
+            results = analysis.run_convergence_analysis()
+        except Exception as e:
+            return {"error": str(e)}
+        buffer = io.StringIO()
+        try:
+            analysis.report_convergence_summary(stream=buffer)
+            report_text = buffer.getvalue().strip()
+        except Exception:
+            report_text = ""
+        results_summary = {"total_samples": len(results), "success_count": 0, "results_per_sample": []}
+        for i, (sid, data) in enumerate(results.items()):
+            if isinstance(data, dict) and data.get("results"):
+                out = data["results"]
+                results_summary["results_per_sample"].append({
+                    "sample_id": sid,
+                    "iters": out.get("iters", -1),
+                    "time": out.get("time", -1),
+                    "numerical_issues": out.get("numerical_issues", False),
+                })
+                if data.get("success"):
+                    results_summary["success_count"] += 1
+            else:
+                results_summary["results_per_sample"].append({"sample_id": sid, "error": str(data)})
+        return {"report_text": report_text or "Convergence analysis completed.", "results_summary": results_summary}
+
+    @server.tool(name="idaes.solve_one_point")
+    def solve_one_point(
+        variable_values: dict[str, float],
+        solver_name: str = "ipopt",
+    ) -> dict[str, Any]:
+        """Set specified variables to given values, solve the model once, then restore original state.
+
+        Use to test a single operating point (e.g. one set of inputs). variable_values maps Pyomo path strings to numbers (e.g. {"m.fs.unit.inlet.flow_mol[0]": 10.0}). Variables are temporarily fixed; after solve, they are unfixed and restored to previous values.
+
+        Args:
+            variable_values: Dict mapping pyomo_path (str) to value (float).
+            solver_name: Solver to use (default ipopt).
+
+        Returns:
+            success: True if optimal termination.
+            termination_condition: Solver termination condition string.
+            message: Solver message if any.
+            error: Set if exception during solve or restore.
+        """
+        saved: list[tuple[Any, float | None, bool]] = []
+        try:
+            for path, val in variable_values.items():
+                comp = m.find_component(path)
+                if comp is None:
+                    for c, ov, wf in saved:
+                        try:
+                            if hasattr(c, "unfix"):
+                                c.unfix()
+                                if wf and ov is not None:
+                                    c.fix(ov)
+                            elif hasattr(c, "value") and ov is not None:
+                                c.value = ov
+                        except Exception:
+                            pass
+                    return {"error": f"Component not found: {path}"}
+                if hasattr(comp, "fix"):
+                    was_fixed = comp.fixed
+                    old_val = _safe_value(comp)
+                    comp.fix(float(val))
+                    saved.append((comp, old_val, was_fixed))
+                elif hasattr(comp, "value"):
+                    old_val = getattr(comp, "value", None)
+                    comp.value = float(val)
+                    saved.append((comp, old_val, False))
+            solver = SolverFactory(solver_name)
+            results = solver.solve(m, tee=False)
+            success = bool(check_optimal_termination(results))
+            tc = str(getattr(results.solver, "termination_condition", "unknown"))
+            msg = str(getattr(results.solver, "message", "") or "")
+        except Exception as e:
+            tc = ""
+            msg = ""
+            success = False
+            results = None
+            err = str(e)
+        for comp, old_val, was_fixed in saved:
+            try:
+                if hasattr(comp, "unfix"):
+                    comp.unfix()
+                    if was_fixed and old_val is not None:
+                        comp.fix(old_val)
+                elif hasattr(comp, "value") and old_val is not None:
+                    comp.value = old_val
+            except Exception:
+                pass
+        if results is None:
+            return {"success": False, "termination_condition": "", "message": msg or err, "error": err}
+        return {"success": success, "termination_condition": tc, "message": msg or ""}
+
+    @server.tool(name="idaes.solve_flowsheet")
+    def solve_flowsheet(
+        solver_name: str = "ipopt",
+        tee: bool = False,
+    ) -> dict[str, Any]:
+        """Solve the whole flowsheet (current model) with the given solver.
+
+        Runs solver.solve(m) on the in-memory model. Use after the model is built and (ideally) initialized. Does not mutate or restore variables; the solution remains in the model.
+
+        Args:
+            solver_name: Solver to use (default ipopt).
+            tee: If True, solver log is printed to server stdout (noisier).
+
+        Returns:
+            success: True if optimal termination.
+            termination_condition: Solver termination condition string.
+            message: Solver message if any.
+            error: Set if solver or model raised an exception.
+        """
+        try:
+            solver = SolverFactory(solver_name)
+            results = solver.solve(m, tee=tee)
+            success = bool(check_optimal_termination(results))
+            tc = str(getattr(results.solver, "termination_condition", "unknown"))
+            msg = str(getattr(results.solver, "message", "") or "")
+            return {"success": success, "termination_condition": tc, "message": msg or ""}
+        except Exception as e:
+            return {"success": False, "termination_condition": "", "message": "", "error": str(e)}
 
     server.run(transport="streamable-http")
