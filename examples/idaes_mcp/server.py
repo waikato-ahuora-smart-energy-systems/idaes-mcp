@@ -683,23 +683,55 @@ def start_mcp_server(
     @server.tool(name="idaes.solve_one_point")
     def solve_one_point(
         variable_values: dict[str, float],
+        unfix_first: list[str] | None = None,
         solver_name: str = "ipopt",
+        tee: bool = False,
+        max_cpu_time: float | None = None,
+        max_iter: int | None = None,
     ) -> dict[str, Any]:
-        """Set specified variables to given values, solve the model once, then restore original state.
+        """Test one operating point: optionally unfix variables, set variables to values, solve once, then restore only the set variables.
 
-        Use to test a single operating point (e.g. one set of inputs). variable_values maps Pyomo path strings to numbers (e.g. {"m.fs.unit.inlet.flow_mol[0]": 10.0}). Variables are temporarily fixed; after solve, they are unfixed and restored to previous values.
+        When DOF is 0, you must free at least one variable before setting others (otherwise DOF becomes negative). Use unfix_first to list paths to unfix; they stay unfixed after the call so you can run solve_one_point again with different variable_values. The variables in variable_values are temporarily fixed to the given values, then after solve they are unfixed and restored to their previous values.
 
         Args:
-            variable_values: Dict mapping pyomo_path (str) to value (float).
+            variable_values: Dict mapping pyomo_path (str) to value (float). These are temporarily fixed for the solve, then restored.
+            unfix_first: Optional list of variable paths to unfix before applying variable_values. Use when DOF=0 to free DOF (e.g. one efficiency or spec). Left unfixed after the call.
             solver_name: Solver to use (default ipopt).
+            tee: If True, solver log is printed to server stdout (for progress/debugging).
+            max_cpu_time: Optional max solver CPU time in seconds (e.g. 300 to avoid long hangs).
+            max_iter: Optional max solver iterations (e.g. 500).
 
         Returns:
             success: True if optimal termination.
             termination_condition: Solver termination condition string.
             message: Solver message if any.
-            error: Set if exception during solve or restore.
+            degrees_of_freedom_before_fix: DOF after unfix_first, before applying variable_values (if no error).
+            degrees_of_freedom_after_fix: DOF after applying variable_values. If negative, solver will fail; unfix more in unfix_first.
+            unfix_first_not_found: Paths in unfix_first that could not be resolved (if any).
+            error: Set if component not found, solve exception, or restore failure.
         """
+        unfix_not_found: list[str] = []
+        if unfix_first:
+            for path in unfix_first:
+                comp = m.find_component(path)
+                if comp is None:
+                    unfix_not_found.append(path)
+                    continue
+                if hasattr(comp, "unfix"):
+                    try:
+                        comp.unfix()
+                    except Exception:
+                        pass
+        dof_before_fix = degrees_of_freedom(m)
+
         saved: list[tuple[Any, float | None, bool]] = []
+        dof_after_fix: int | None = None
+        results = None
+        success = False
+        tc = ""
+        msg = ""
+        err = ""
+
         try:
             for path, val in variable_values.items():
                 comp = m.find_component(path)
@@ -714,7 +746,15 @@ def start_mcp_server(
                                 c.value = ov
                         except Exception:
                             pass
-                    return {"error": f"Component not found: {path}"}
+                    return {
+                        "success": False,
+                        "termination_condition": "",
+                        "message": "",
+                        "degrees_of_freedom_before_fix": dof_before_fix,
+                        "degrees_of_freedom_after_fix": None,
+                        "unfix_first_not_found": unfix_not_found or None,
+                        "error": f"Component not found: {path}",
+                    }
                 if hasattr(comp, "fix"):
                     was_fixed = comp.fixed
                     old_val = _safe_value(comp)
@@ -724,8 +764,14 @@ def start_mcp_server(
                     old_val = getattr(comp, "value", None)
                     comp.value = float(val)
                     saved.append((comp, old_val, False))
+            dof_after_fix = degrees_of_freedom(m)
+
             solver = SolverFactory(solver_name)
-            results = solver.solve(m, tee=False)
+            if max_cpu_time is not None:
+                solver.options["max_cpu_time"] = max_cpu_time
+            if max_iter is not None:
+                solver.options["max_iter"] = max_iter
+            results = solver.solve(m, tee=tee)
             success = bool(check_optimal_termination(results))
             tc = str(getattr(results.solver, "termination_condition", "unknown"))
             msg = str(getattr(results.solver, "message", "") or "")
@@ -735,6 +781,9 @@ def start_mcp_server(
             success = False
             results = None
             err = str(e)
+            if saved:
+                dof_after_fix = degrees_of_freedom(m)
+
         for comp, old_val, was_fixed in saved:
             try:
                 if hasattr(comp, "unfix"):
@@ -745,9 +794,18 @@ def start_mcp_server(
                     comp.value = old_val
             except Exception:
                 pass
-        if results is None:
-            return {"success": False, "termination_condition": "", "message": msg or err, "error": err}
-        return {"success": success, "termination_condition": tc, "message": msg or ""}
+
+        out: dict[str, Any] = {
+            "success": success and (results is not None),
+            "termination_condition": tc,
+            "message": msg or (err if results is None else ""),
+            "degrees_of_freedom_before_fix": dof_before_fix,
+            "degrees_of_freedom_after_fix": dof_after_fix,
+            "unfix_first_not_found": unfix_not_found or None,
+        }
+        if results is None and err:
+            out["error"] = err
+        return out
 
     @server.tool(name="idaes.solve_flowsheet")
     def solve_flowsheet(
@@ -778,11 +836,50 @@ def start_mcp_server(
         except Exception as e:
             return {"success": False, "termination_condition": "", "message": "", "error": str(e)}
 
+    @server.tool(name="idaes.suggest_variables_to_unfix")
+    def suggest_variables_to_unfix(
+        limit: int = 15,
+        pattern: str | None = None,
+    ) -> dict[str, Any]:
+        """Suggest fixed variables that are often good to unfix when testing a new operating point (e.g. for solve_one_point with DOF=0).
+
+        Returns fixed variable paths, optionally filtered by a name substring. Prefer calling this when DOF=0 and you want to free one or more DOF to test different variable values; then pass one or more of the returned paths to solve_one_point's unfix_first (or to unfix_variables).
+
+        Args:
+            limit: Max number of paths to return (default 15).
+            pattern: Optional case-insensitive substring to filter variable names (e.g. "efficiency", "split_fraction", "temperature").
+
+        Returns:
+            paths: List of Pyomo variable path strings (full path with m. prefix where applicable).
+            count: Number of paths returned.
+            degrees_of_freedom: Current model DOF (0 means you need to unfix at least one variable before testing new values in solve_one_point).
+        """
+        paths_list: list[str] = []
+        for v in m.component_data_objects(Var, descend_into=True):
+            if not v.fixed:
+                continue
+            name = getattr(v, "name", "") or ""
+            if pattern and pattern.lower() not in name.lower():
+                continue
+            try:
+                path = v.getname(fully_qualified=True) if hasattr(v, "getname") else v.name
+                if path and path not in paths_list:
+                    paths_list.append(path)
+            except Exception:
+                pass
+            if len(paths_list) >= limit:
+                break
+        return {
+            "paths": paths_list,
+            "count": len(paths_list),
+            "degrees_of_freedom": degrees_of_freedom(m),
+        }
+
     @server.tool(name="idaes.unfix_variables")
     def unfix_variables(paths: list[str]) -> dict[str, Any]:
         """Unfix the given variables in the live model (persistent until server restarts).
 
-        Use this to free degrees of freedom so you can run solve_one_point or convergence_analysis with different values. With DOF=0, any extra fix in solve_one_point makes DOF negative and the solver fails; unfix specs here first (e.g. valve outlet temperatures), then test new operating points.
+        Use this to free degrees of freedom so you can run solve_one_point or convergence_analysis with different values. With DOF=0, any extra fix in solve_one_point makes DOF negative and the solver fails; unfix specs here first (e.g. valve outlet temperatures), then test new operating points. Alternatively use solve_one_point's unfix_first parameter to unfix and test in one call.
 
         Args:
             paths: List of Pyomo variable path strings (e.g. ["m.fs.Effect1Valve_1643611.control_volume.properties_out[0.0].temperature"]).
