@@ -1,0 +1,9 @@
+{
+	"servers": {
+		"ahuora-mcp-server": {
+			"url": "http://127.0.0.1:8005/mcp",
+			"type": "http"
+		}
+	},
+	"inputs": []
+}
