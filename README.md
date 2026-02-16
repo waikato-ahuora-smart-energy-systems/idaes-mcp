@@ -67,9 +67,17 @@ Available tools:
 **Solve**
 - `idaes.solve_flowsheet` – Solve the whole flowsheet (current model) with ipopt or another solver; returns success, termination_condition, message. Solution stays in the model.
 
-**Mutation / parameter sweep (test multiple values)**
-- `idaes.convergence_analysis` – Parameter sweep over input ranges (UniformSampling); runs model at each sample, returns iterations/time/numerical_issues per point (sequential).
-- `idaes.solve_one_point` – Set given variables to values, solve once, restore state; returns success and termination_condition (for testing a single operating point).
+**Change specs in the live model (persistent until server restarts)**  
+*Required so the model can have DOF > 0 and you can run solve_one_point / convergence_analysis.*
+- `idaes.unfix_variables` – Unfix given variable paths (frees DOF). Use e.g. to unfix valve outlet temperatures so you can sweep feed flow.
+- `idaes.fix_variables` – Set variables to values and fix them (e.g. swap specs or set phase split 0.0 → 0.001).
+- `idaes.set_constraints_active` – Activate or deactivate constraints by path (e.g. remove redundant temperature constraint; use `active=False` to deactivate).
+- `idaes.set_variable_bounds` – Set lower/upper bounds on variables (setlb/setub). Use to relax bounds or bound decision variables.
+- `idaes.apply_changes_and_solve` – Apply multiple changes in one call (unfix, fix, activate/deactivate constraints, set bounds), then optionally solve. Returns apply summary, model summary, solve result, and top residuals. Use to try a batch of spec changes in one round-trip.
+
+**Test multiple values (after freeing DOF)**
+- `idaes.solve_one_point` – Set given variables to values, solve once, **restore** state; for testing one operating point. Only works if DOF ≥ 0 after the temporary fixes (so unfix some specs first if DOF was 0).
+- `idaes.convergence_analysis` – Parameter sweep over input ranges (UniformSampling); runs model at each sample, returns iterations/time/numerical_issues per point (sequential). Requires DOF ≥ 0 for the sweep inputs.
 
 
 ## Model diagnostics workflow (for real insight)
@@ -89,3 +97,19 @@ Available tools:
 # Examples
 
 The example files show working and broken idaes flowsheets. A description file is also provided.
+
+'''
+{
+  "mcpServers": {
+    "idaes-mcp": {
+      "url": "http://127.0.0.1:8005/mcp"
+    },
+    "exa": {
+      "url": "https://mcp.exa.ai/mcp",
+      "headers": {}
+    }
+  }
+}
+'''
+
+

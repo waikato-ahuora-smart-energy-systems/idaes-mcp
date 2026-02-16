@@ -683,23 +683,55 @@ def start_mcp_server(
     @server.tool(name="idaes.solve_one_point")
     def solve_one_point(
         variable_values: dict[str, float],
+        unfix_first: list[str] | None = None,
         solver_name: str = "ipopt",
+        tee: bool = False,
+        max_cpu_time: float | None = None,
+        max_iter: int | None = None,
     ) -> dict[str, Any]:
-        """Set specified variables to given values, solve the model once, then restore original state.
+        """Test one operating point: optionally unfix variables, set variables to values, solve once, then restore only the set variables.
 
-        Use to test a single operating point (e.g. one set of inputs). variable_values maps Pyomo path strings to numbers (e.g. {"m.fs.unit.inlet.flow_mol[0]": 10.0}). Variables are temporarily fixed; after solve, they are unfixed and restored to previous values.
+        When DOF is 0, you must free at least one variable before setting others (otherwise DOF becomes negative). Use unfix_first to list paths to unfix; they stay unfixed after the call so you can run solve_one_point again with different variable_values. The variables in variable_values are temporarily fixed to the given values, then after solve they are unfixed and restored to their previous values.
 
         Args:
-            variable_values: Dict mapping pyomo_path (str) to value (float).
+            variable_values: Dict mapping pyomo_path (str) to value (float). These are temporarily fixed for the solve, then restored.
+            unfix_first: Optional list of variable paths to unfix before applying variable_values. Use when DOF=0 to free DOF (e.g. one efficiency or spec). Left unfixed after the call.
             solver_name: Solver to use (default ipopt).
+            tee: If True, solver log is printed to server stdout (for progress/debugging).
+            max_cpu_time: Optional max solver CPU time in seconds (e.g. 300 to avoid long hangs).
+            max_iter: Optional max solver iterations (e.g. 500).
 
         Returns:
             success: True if optimal termination.
             termination_condition: Solver termination condition string.
             message: Solver message if any.
-            error: Set if exception during solve or restore.
+            degrees_of_freedom_before_fix: DOF after unfix_first, before applying variable_values (if no error).
+            degrees_of_freedom_after_fix: DOF after applying variable_values. If negative, solver will fail; unfix more in unfix_first.
+            unfix_first_not_found: Paths in unfix_first that could not be resolved (if any).
+            error: Set if component not found, solve exception, or restore failure.
         """
+        unfix_not_found: list[str] = []
+        if unfix_first:
+            for path in unfix_first:
+                comp = m.find_component(path)
+                if comp is None:
+                    unfix_not_found.append(path)
+                    continue
+                if hasattr(comp, "unfix"):
+                    try:
+                        comp.unfix()
+                    except Exception:
+                        pass
+        dof_before_fix = degrees_of_freedom(m)
+
         saved: list[tuple[Any, float | None, bool]] = []
+        dof_after_fix: int | None = None
+        results = None
+        success = False
+        tc = ""
+        msg = ""
+        err = ""
+
         try:
             for path, val in variable_values.items():
                 comp = m.find_component(path)
@@ -714,7 +746,15 @@ def start_mcp_server(
                                 c.value = ov
                         except Exception:
                             pass
-                    return {"error": f"Component not found: {path}"}
+                    return {
+                        "success": False,
+                        "termination_condition": "",
+                        "message": "",
+                        "degrees_of_freedom_before_fix": dof_before_fix,
+                        "degrees_of_freedom_after_fix": None,
+                        "unfix_first_not_found": unfix_not_found or None,
+                        "error": f"Component not found: {path}",
+                    }
                 if hasattr(comp, "fix"):
                     was_fixed = comp.fixed
                     old_val = _safe_value(comp)
@@ -724,8 +764,14 @@ def start_mcp_server(
                     old_val = getattr(comp, "value", None)
                     comp.value = float(val)
                     saved.append((comp, old_val, False))
+            dof_after_fix = degrees_of_freedom(m)
+
             solver = SolverFactory(solver_name)
-            results = solver.solve(m, tee=False)
+            if max_cpu_time is not None:
+                solver.options["max_cpu_time"] = max_cpu_time
+            if max_iter is not None:
+                solver.options["max_iter"] = max_iter
+            results = solver.solve(m, tee=tee)
             success = bool(check_optimal_termination(results))
             tc = str(getattr(results.solver, "termination_condition", "unknown"))
             msg = str(getattr(results.solver, "message", "") or "")
@@ -735,6 +781,9 @@ def start_mcp_server(
             success = False
             results = None
             err = str(e)
+            if saved:
+                dof_after_fix = degrees_of_freedom(m)
+
         for comp, old_val, was_fixed in saved:
             try:
                 if hasattr(comp, "unfix"):
@@ -745,9 +794,18 @@ def start_mcp_server(
                     comp.value = old_val
             except Exception:
                 pass
-        if results is None:
-            return {"success": False, "termination_condition": "", "message": msg or err, "error": err}
-        return {"success": success, "termination_condition": tc, "message": msg or ""}
+
+        out: dict[str, Any] = {
+            "success": success and (results is not None),
+            "termination_condition": tc,
+            "message": msg or (err if results is None else ""),
+            "degrees_of_freedom_before_fix": dof_before_fix,
+            "degrees_of_freedom_after_fix": dof_after_fix,
+            "unfix_first_not_found": unfix_not_found or None,
+        }
+        if results is None and err:
+            out["error"] = err
+        return out
 
     @server.tool(name="idaes.solve_flowsheet")
     def solve_flowsheet(
@@ -777,5 +835,335 @@ def start_mcp_server(
             return {"success": success, "termination_condition": tc, "message": msg or ""}
         except Exception as e:
             return {"success": False, "termination_condition": "", "message": "", "error": str(e)}
+
+    @server.tool(name="idaes.suggest_variables_to_unfix")
+    def suggest_variables_to_unfix(
+        limit: int = 15,
+        pattern: str | None = None,
+    ) -> dict[str, Any]:
+        """Suggest fixed variables that are often good to unfix when testing a new operating point (e.g. for solve_one_point with DOF=0).
+
+        Returns fixed variable paths, optionally filtered by a name substring. Prefer calling this when DOF=0 and you want to free one or more DOF to test different variable values; then pass one or more of the returned paths to solve_one_point's unfix_first (or to unfix_variables).
+
+        Args:
+            limit: Max number of paths to return (default 15).
+            pattern: Optional case-insensitive substring to filter variable names (e.g. "efficiency", "split_fraction", "temperature").
+
+        Returns:
+            paths: List of Pyomo variable path strings (full path with m. prefix where applicable).
+            count: Number of paths returned.
+            degrees_of_freedom: Current model DOF (0 means you need to unfix at least one variable before testing new values in solve_one_point).
+        """
+        paths_list: list[str] = []
+        for v in m.component_data_objects(Var, descend_into=True):
+            if not v.fixed:
+                continue
+            name = getattr(v, "name", "") or ""
+            if pattern and pattern.lower() not in name.lower():
+                continue
+            try:
+                path = v.getname(fully_qualified=True) if hasattr(v, "getname") else v.name
+                if path and path not in paths_list:
+                    paths_list.append(path)
+            except Exception:
+                pass
+            if len(paths_list) >= limit:
+                break
+        return {
+            "paths": paths_list,
+            "count": len(paths_list),
+            "degrees_of_freedom": degrees_of_freedom(m),
+        }
+
+    @server.tool(name="idaes.unfix_variables")
+    def unfix_variables(paths: list[str]) -> dict[str, Any]:
+        """Unfix the given variables in the live model (persistent until server restarts).
+
+        Use this to free degrees of freedom so you can run solve_one_point or convergence_analysis with different values. With DOF=0, any extra fix in solve_one_point makes DOF negative and the solver fails; unfix specs here first (e.g. valve outlet temperatures), then test new operating points. Alternatively use solve_one_point's unfix_first parameter to unfix and test in one call.
+
+        Args:
+            paths: List of Pyomo variable path strings (e.g. ["m.fs.Effect1Valve_1643611.control_volume.properties_out[0.0].temperature"]).
+
+        Returns:
+            unfixed: Number of variables unfixed.
+            not_found: List of paths that could not be resolved.
+            degrees_of_freedom: Model DOF after unfixing.
+            error: Set if a path resolved to a non-variable or unfix failed.
+        """
+        not_found: list[str] = []
+        unfixed = 0
+        for path in paths:
+            comp = m.find_component(path)
+            if comp is None:
+                not_found.append(path)
+                continue
+            if not hasattr(comp, "unfix"):
+                return {"unfixed": unfixed, "not_found": not_found, "degrees_of_freedom": degrees_of_freedom(m), "error": f"Not a variable (no unfix): {path}"}
+            try:
+                comp.unfix()
+                unfixed += 1
+            except Exception as e:
+                return {"unfixed": unfixed, "not_found": not_found, "degrees_of_freedom": degrees_of_freedom(m), "error": f"Unfix failed for {path}: {e}"}
+        return {"unfixed": unfixed, "not_found": not_found, "degrees_of_freedom": degrees_of_freedom(m)}
+
+    @server.tool(name="idaes.fix_variables")
+    def fix_variables(variable_values: dict[str, float]) -> dict[str, Any]:
+        """Set variables to the given values and fix them in the live model (persistent until server restarts).
+
+        Use to swap specs: e.g. unfix valve outlet temperatures (unfix_variables), then fix a different variable (e.g. feed flow_mol) here so the model stays square. Also use to correct brittle specs (e.g. phase split 0.0 -> 0.001).
+
+        Args:
+            variable_values: Dict mapping Pyomo variable path to value (e.g. {"m.fs.Preheater_1643423.cold_side.properties_in[0.0].flow_mol": 1200.0}).
+
+        Returns:
+            fixed: Number of variables set and fixed.
+            not_found: List of paths that could not be resolved.
+            degrees_of_freedom: Model DOF after fixing.
+            error: Set if a path resolved to a non-variable or fix failed.
+        """
+        not_found: list[str] = []
+        fixed = 0
+        for path, val in variable_values.items():
+            comp = m.find_component(path)
+            if comp is None:
+                not_found.append(path)
+                continue
+            if hasattr(comp, "fix"):
+                try:
+                    comp.fix(float(val))
+                    fixed += 1
+                except Exception as e:
+                    return {"fixed": fixed, "not_found": not_found, "degrees_of_freedom": degrees_of_freedom(m), "error": f"Fix failed for {path}: {e}"}
+            elif hasattr(comp, "value"):
+                try:
+                    comp.value = float(val)
+                    fixed += 1
+                except Exception as e:
+                    return {"fixed": fixed, "not_found": not_found, "degrees_of_freedom": degrees_of_freedom(m), "error": f"Set value failed for {path}: {e}"}
+            else:
+                return {"fixed": fixed, "not_found": not_found, "degrees_of_freedom": degrees_of_freedom(m), "error": f"Not a variable: {path}"}
+        return {"fixed": fixed, "not_found": not_found, "degrees_of_freedom": degrees_of_freedom(m)}
+
+    @server.tool(name="idaes.set_constraints_active")
+    def set_constraints_active(paths: list[str], active: bool) -> dict[str, Any]:
+        """Activate or deactivate constraints in the live model (persistent until server restarts).
+
+        This is the constraint analogue of fix/unfix: active=True means the constraint is included in the model (\"fixed in\"); active=False means it is excluded (\"unfixed\"). Use to remove redundant or problematic specs: e.g. if temperature is both fixed and constrained, deactivate the extra constraint (active=False) so the model is not over-constrained. Use list_constraints / dulmage_mendelsohn_partition to find constraint paths.
+
+        Args:
+            paths: List of Pyomo constraint path strings (e.g. ["m.fs.unit.equality_temperature"]).
+            active: True to activate (include in model), False to deactivate (exclude).
+
+        Returns:
+            changed: Number of constraints set to the requested active state.
+            not_found: List of paths that could not be resolved.
+            error: Set if a path resolved to a non-constraint or set failed.
+        """
+        not_found: list[str] = []
+        changed = 0
+        for path in paths:
+            comp = m.find_component(path)
+            if comp is None:
+                not_found.append(path)
+                continue
+            if not hasattr(comp, "active"):
+                return {"changed": changed, "not_found": not_found, "error": f"Not a constraint (no active): {path}"}
+            try:
+                comp.activate() if active else comp.deactivate()
+                changed += 1
+            except Exception as e:
+                return {"changed": changed, "not_found": not_found, "error": f"Set active failed for {path}: {e}"}
+        return {"changed": changed, "not_found": not_found}
+
+    @server.tool(name="idaes.set_variable_bounds")
+    def set_variable_bounds(variable_bounds: dict[str, dict[str, float | None]]) -> dict[str, Any]:
+        """Set lower and/or upper bounds on variables in the live model (persistent until server restarts).
+
+        IDAES workflow: after unfixing some variables for optimization, add bounds to constrain the solution space (variable.setlb / setub). Also use to relax bounds when infeasibility_explanation suggests loosening a bound. list_variables returns current lb/ub.
+
+        Args:
+            variable_bounds: Dict mapping Pyomo variable path to {"lower": float or None, "upper": float or None}. Omit "lower" or "upper" to leave that bound unchanged; use None to clear the bound (no limit). Example: {"m.fs.unit.flow[0]": {"lower": 0, "upper": 1000}}.
+
+        Returns:
+            changed: Number of variables whose bounds were updated.
+            not_found: List of paths that could not be resolved.
+            degrees_of_freedom: Model DOF after changes (bounds do not change DOF).
+            error: Set if a path resolved to a non-variable or setlb/setub failed.
+        """
+        not_found: list[str] = []
+        changed = 0
+        for path, bounds in variable_bounds.items():
+            comp = m.find_component(path)
+            if comp is None:
+                not_found.append(path)
+                continue
+            if not hasattr(comp, "setlb") and not hasattr(comp, "setub"):
+                return {"changed": changed, "not_found": not_found, "degrees_of_freedom": degrees_of_freedom(m), "error": f"Not a variable (no setlb/setub): {path}"}
+            try:
+                if "lower" in bounds:
+                    val = bounds["lower"]
+                    if val is None:
+                        comp.setlb(None)
+                    else:
+                        comp.setlb(float(val))
+                if "upper" in bounds:
+                    val = bounds["upper"]
+                    if val is None:
+                        comp.setub(None)
+                    else:
+                        comp.setub(float(val))
+                if "lower" in bounds or "upper" in bounds:
+                    changed += 1
+            except Exception as e:
+                return {"changed": changed, "not_found": not_found, "degrees_of_freedom": degrees_of_freedom(m), "error": f"Set bounds failed for {path}: {e}"}
+        return {"changed": changed, "not_found": not_found, "degrees_of_freedom": degrees_of_freedom(m)}
+
+    @server.tool(name="idaes.apply_changes_and_solve")
+    def apply_changes_and_solve(
+        unfix_variable_paths: list[str] | None = None,
+        fix_variable_values: dict[str, float] | None = None,
+        deactivate_constraint_paths: list[str] | None = None,
+        activate_constraint_paths: list[str] | None = None,
+        variable_bounds: dict[str, dict[str, float | None]] | None = None,
+        solve: bool = True,
+        solver_name: str = "ipopt",
+    ) -> dict[str, Any]:
+        """Apply multiple spec changes in one call, then optionally solve. Easier than calling unfix_variables, fix_variables, set_constraints_active, set_variable_bounds, and solve_flowsheet separately.
+
+        Order of application: 1) unfix variables, 2) fix variables, 3) activate constraints, 4) deactivate constraints, 5) set variable bounds, 6) solve (if solve=True). All changes are persistent. If a step fails, returns immediately with error and partial results; the model may be left in a partially changed state.
+
+        Args:
+            unfix_variable_paths: Variable paths to unfix (free DOF).
+            fix_variable_values: Dict of variable path -> value to set and fix.
+            deactivate_constraint_paths: Constraint paths to deactivate (exclude from model).
+            activate_constraint_paths: Constraint paths to activate (include in model).
+            variable_bounds: Dict of path -> {"lower": x, "upper": y} (omit key to leave bound unchanged).
+            solve: If True, run solve_flowsheet after applying changes.
+            solver_name: Solver to use when solve=True.
+
+        Returns:
+            apply_summary: {unfixed, fixed, constraints_activated, constraints_deactivated, bounds_changed, not_found (per category), errors (if any)}.
+            model_summary: {degrees_of_freedom, n_variables, n_constraints, n_fixed_variables} after changes.
+            solve_result: Present if solve=True: {success, termination_condition, message, error}.
+            top_residuals: Present if solve=True and success: up to 10 largest constraint residuals.
+        """
+        out: dict[str, Any] = {"apply_summary": {}, "model_summary": None, "solve_result": None, "top_residuals": None}
+        summary: dict[str, Any] = {"unfixed": 0, "fixed": 0, "constraints_activated": 0, "constraints_deactivated": 0, "bounds_changed": 0, "not_found": [], "errors": []}
+
+        def do_unfix(paths: list[str]) -> None:
+            for path in paths:
+                comp = m.find_component(path)
+                if comp is None:
+                    summary["not_found"].append(("unfix", path))
+                    continue
+                if hasattr(comp, "unfix"):
+                    try:
+                        comp.unfix()
+                        summary["unfixed"] += 1
+                    except Exception as e:
+                        summary["errors"].append(f"unfix {path}: {e}")
+                else:
+                    summary["errors"].append(f"Not a variable (unfix): {path}")
+
+        def do_fix(vals: dict[str, float]) -> None:
+            for path, val in vals.items():
+                comp = m.find_component(path)
+                if comp is None:
+                    summary["not_found"].append(("fix", path))
+                    continue
+                if hasattr(comp, "fix"):
+                    try:
+                        comp.fix(float(val))
+                        summary["fixed"] += 1
+                    except Exception as e:
+                        summary["errors"].append(f"fix {path}: {e}")
+                elif hasattr(comp, "value"):
+                    try:
+                        comp.value = float(val)
+                        summary["fixed"] += 1
+                    except Exception as e:
+                        summary["errors"].append(f"set value {path}: {e}")
+                else:
+                    summary["errors"].append(f"Not a variable (fix): {path}")
+
+        def do_constraints(paths: list[str], active: bool) -> None:
+            for path in paths:
+                comp = m.find_component(path)
+                if comp is None:
+                    summary["not_found"].append(("constraint", path))
+                    continue
+                if hasattr(comp, "activate"):
+                    try:
+                        comp.activate() if active else comp.deactivate()
+                        if active:
+                            summary["constraints_activated"] += 1
+                        else:
+                            summary["constraints_deactivated"] += 1
+                    except Exception as e:
+                        summary["errors"].append(f"constraint {path}: {e}")
+                else:
+                    summary["errors"].append(f"Not a constraint: {path}")
+
+        def do_bounds(bounds: dict[str, dict[str, float | None]]) -> None:
+            for path, b in bounds.items():
+                comp = m.find_component(path)
+                if comp is None:
+                    summary["not_found"].append(("bounds", path))
+                    continue
+                if not hasattr(comp, "setlb") and not hasattr(comp, "setub"):
+                    summary["errors"].append(f"Not a variable (bounds): {path}")
+                    continue
+                try:
+                    if "lower" in b:
+                        comp.setlb(None if b["lower"] is None else float(b["lower"]))
+                    if "upper" in b:
+                        comp.setub(None if b["upper"] is None else float(b["upper"]))
+                    summary["bounds_changed"] += 1
+                except Exception as e:
+                    summary["errors"].append(f"bounds {path}: {e}")
+
+        if unfix_variable_paths:
+            do_unfix(unfix_variable_paths)
+        if fix_variable_values:
+            do_fix(fix_variable_values)
+        if activate_constraint_paths:
+            do_constraints(activate_constraint_paths, True)
+        if deactivate_constraint_paths:
+            do_constraints(deactivate_constraint_paths, False)
+        if variable_bounds:
+            do_bounds(variable_bounds)
+
+        out["apply_summary"] = summary
+        variables = list(m.component_data_objects(Var, descend_into=True))
+        constraints = list(m.component_data_objects(Constraint, descend_into=True))
+        out["model_summary"] = {
+            "degrees_of_freedom": degrees_of_freedom(m),
+            "n_variables": len(variables),
+            "n_constraints": len(constraints),
+            "n_fixed_variables": sum(1 for v in variables if v.fixed),
+        }
+
+        if solve:
+            try:
+                solver = SolverFactory(solver_name)
+                results = solver.solve(m, tee=False)
+                success = bool(check_optimal_termination(results))
+                tc = str(getattr(results.solver, "termination_condition", "unknown"))
+                msg = str(getattr(results.solver, "message", "") or "")
+                out["solve_result"] = {"success": success, "termination_condition": tc, "message": msg}
+                if success:
+                    res_list: list[dict[str, Any]] = []
+                    for constraint in m.component_data_objects(Constraint, descend_into=True):
+                        if not constraint.active:
+                            continue
+                        r = _compute_constraint_residual(constraint)
+                        if r is not None and r > 0:
+                            res_list.append({"name": constraint.name, "residual": r})
+                    res_list.sort(key=lambda x: -x["residual"])
+                    out["top_residuals"] = res_list[:10]
+            except Exception as e:
+                out["solve_result"] = {"success": False, "termination_condition": "", "message": "", "error": str(e)}
+
+        return out
 
     server.run(transport="streamable-http")
