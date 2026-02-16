@@ -921,4 +921,152 @@ def start_mcp_server(
                 return {"changed": changed, "not_found": not_found, "degrees_of_freedom": degrees_of_freedom(m), "error": f"Set bounds failed for {path}: {e}"}
         return {"changed": changed, "not_found": not_found, "degrees_of_freedom": degrees_of_freedom(m)}
 
+    @server.tool(name="idaes.apply_changes_and_solve")
+    def apply_changes_and_solve(
+        unfix_variable_paths: list[str] | None = None,
+        fix_variable_values: dict[str, float] | None = None,
+        deactivate_constraint_paths: list[str] | None = None,
+        activate_constraint_paths: list[str] | None = None,
+        variable_bounds: dict[str, dict[str, float | None]] | None = None,
+        solve: bool = True,
+        solver_name: str = "ipopt",
+    ) -> dict[str, Any]:
+        """Apply multiple spec changes in one call, then optionally solve. Easier than calling unfix_variables, fix_variables, set_constraints_active, set_variable_bounds, and solve_flowsheet separately.
+
+        Order of application: 1) unfix variables, 2) fix variables, 3) activate constraints, 4) deactivate constraints, 5) set variable bounds, 6) solve (if solve=True). All changes are persistent. If a step fails, returns immediately with error and partial results; the model may be left in a partially changed state.
+
+        Args:
+            unfix_variable_paths: Variable paths to unfix (free DOF).
+            fix_variable_values: Dict of variable path -> value to set and fix.
+            deactivate_constraint_paths: Constraint paths to deactivate (exclude from model).
+            activate_constraint_paths: Constraint paths to activate (include in model).
+            variable_bounds: Dict of path -> {"lower": x, "upper": y} (omit key to leave bound unchanged).
+            solve: If True, run solve_flowsheet after applying changes.
+            solver_name: Solver to use when solve=True.
+
+        Returns:
+            apply_summary: {unfixed, fixed, constraints_activated, constraints_deactivated, bounds_changed, not_found (per category), errors (if any)}.
+            model_summary: {degrees_of_freedom, n_variables, n_constraints, n_fixed_variables} after changes.
+            solve_result: Present if solve=True: {success, termination_condition, message, error}.
+            top_residuals: Present if solve=True and success: up to 10 largest constraint residuals.
+        """
+        out: dict[str, Any] = {"apply_summary": {}, "model_summary": None, "solve_result": None, "top_residuals": None}
+        summary: dict[str, Any] = {"unfixed": 0, "fixed": 0, "constraints_activated": 0, "constraints_deactivated": 0, "bounds_changed": 0, "not_found": [], "errors": []}
+
+        def do_unfix(paths: list[str]) -> None:
+            for path in paths:
+                comp = m.find_component(path)
+                if comp is None:
+                    summary["not_found"].append(("unfix", path))
+                    continue
+                if hasattr(comp, "unfix"):
+                    try:
+                        comp.unfix()
+                        summary["unfixed"] += 1
+                    except Exception as e:
+                        summary["errors"].append(f"unfix {path}: {e}")
+                else:
+                    summary["errors"].append(f"Not a variable (unfix): {path}")
+
+        def do_fix(vals: dict[str, float]) -> None:
+            for path, val in vals.items():
+                comp = m.find_component(path)
+                if comp is None:
+                    summary["not_found"].append(("fix", path))
+                    continue
+                if hasattr(comp, "fix"):
+                    try:
+                        comp.fix(float(val))
+                        summary["fixed"] += 1
+                    except Exception as e:
+                        summary["errors"].append(f"fix {path}: {e}")
+                elif hasattr(comp, "value"):
+                    try:
+                        comp.value = float(val)
+                        summary["fixed"] += 1
+                    except Exception as e:
+                        summary["errors"].append(f"set value {path}: {e}")
+                else:
+                    summary["errors"].append(f"Not a variable (fix): {path}")
+
+        def do_constraints(paths: list[str], active: bool) -> None:
+            for path in paths:
+                comp = m.find_component(path)
+                if comp is None:
+                    summary["not_found"].append(("constraint", path))
+                    continue
+                if hasattr(comp, "activate"):
+                    try:
+                        comp.activate() if active else comp.deactivate()
+                        if active:
+                            summary["constraints_activated"] += 1
+                        else:
+                            summary["constraints_deactivated"] += 1
+                    except Exception as e:
+                        summary["errors"].append(f"constraint {path}: {e}")
+                else:
+                    summary["errors"].append(f"Not a constraint: {path}")
+
+        def do_bounds(bounds: dict[str, dict[str, float | None]]) -> None:
+            for path, b in bounds.items():
+                comp = m.find_component(path)
+                if comp is None:
+                    summary["not_found"].append(("bounds", path))
+                    continue
+                if not hasattr(comp, "setlb") and not hasattr(comp, "setub"):
+                    summary["errors"].append(f"Not a variable (bounds): {path}")
+                    continue
+                try:
+                    if "lower" in b:
+                        comp.setlb(None if b["lower"] is None else float(b["lower"]))
+                    if "upper" in b:
+                        comp.setub(None if b["upper"] is None else float(b["upper"]))
+                    summary["bounds_changed"] += 1
+                except Exception as e:
+                    summary["errors"].append(f"bounds {path}: {e}")
+
+        if unfix_variable_paths:
+            do_unfix(unfix_variable_paths)
+        if fix_variable_values:
+            do_fix(fix_variable_values)
+        if activate_constraint_paths:
+            do_constraints(activate_constraint_paths, True)
+        if deactivate_constraint_paths:
+            do_constraints(deactivate_constraint_paths, False)
+        if variable_bounds:
+            do_bounds(variable_bounds)
+
+        out["apply_summary"] = summary
+        variables = list(m.component_data_objects(Var, descend_into=True))
+        constraints = list(m.component_data_objects(Constraint, descend_into=True))
+        out["model_summary"] = {
+            "degrees_of_freedom": degrees_of_freedom(m),
+            "n_variables": len(variables),
+            "n_constraints": len(constraints),
+            "n_fixed_variables": sum(1 for v in variables if v.fixed),
+        }
+
+        if solve:
+            try:
+                solver = SolverFactory(solver_name)
+                results = solver.solve(m, tee=False)
+                success = bool(check_optimal_termination(results))
+                tc = str(getattr(results.solver, "termination_condition", "unknown"))
+                msg = str(getattr(results.solver, "message", "") or "")
+                out["solve_result"] = {"success": success, "termination_condition": tc, "message": msg}
+                if success:
+                    res_list: list[dict[str, Any]] = []
+                    for constraint in m.component_data_objects(Constraint, descend_into=True):
+                        if not constraint.active:
+                            continue
+                        r = _compute_constraint_residual(constraint)
+                        if r is not None and r > 0:
+                            res_list.append({"name": constraint.name, "residual": r})
+                    res_list.sort(key=lambda x: -x["residual"])
+                    out["top_residuals"] = res_list[:10]
+            except Exception as e:
+                out["solve_result"] = {"success": False, "termination_condition": "", "message": "", "error": str(e)}
+
+        return out
+
     server.run(transport="streamable-http")

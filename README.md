@@ -71,8 +71,9 @@ Available tools:
 *Required so the model can have DOF > 0 and you can run solve_one_point / convergence_analysis.*
 - `idaes.unfix_variables` – Unfix given variable paths (frees DOF). Use e.g. to unfix valve outlet temperatures so you can sweep feed flow.
 - `idaes.fix_variables` – Set variables to values and fix them (e.g. swap specs or set phase split 0.0 → 0.001).
-- `idaes.set_constraints_active` – **Fix/unfix constraints**: activate (`active=True`) or deactivate (`active=False`) constraints by path. Use to remove redundant specs (e.g. duplicate temperature constraint).
-- `idaes.set_variable_bounds` – Set lower/upper bounds on variables (setlb/setub). Use for optimization (bound decision variables) or to relax bounds when infeasibility_explanation suggests it.
+- `idaes.set_constraints_active` – Activate or deactivate constraints by path (e.g. remove redundant temperature constraint; use `active=False` to deactivate).
+- `idaes.set_variable_bounds` – Set lower/upper bounds on variables (setlb/setub). Use to relax bounds or bound decision variables.
+- `idaes.apply_changes_and_solve` – Apply multiple changes in one call (unfix, fix, activate/deactivate constraints, set bounds), then optionally solve. Returns apply summary, model summary, solve result, and top residuals. Use to try a batch of spec changes in one round-trip.
 
 **Test multiple values (after freeing DOF)**
 - `idaes.solve_one_point` – Set given variables to values, solve once, **restore** state; for testing one operating point. Only works if DOF ≥ 0 after the temporary fixes (so unfix some specs first if DOF was 0).
@@ -96,3 +97,19 @@ Available tools:
 # Examples
 
 The example files show working and broken idaes flowsheets. A description file is also provided.
+
+'''
+{
+  "mcpServers": {
+    "idaes-mcp": {
+      "url": "http://127.0.0.1:8005/mcp"
+    },
+    "exa": {
+      "url": "https://mcp.exa.ai/mcp",
+      "headers": {}
+    }
+  }
+}
+'''
+
+
