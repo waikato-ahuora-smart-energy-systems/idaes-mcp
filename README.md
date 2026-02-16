@@ -67,9 +67,16 @@ Available tools:
 **Solve**
 - `idaes.solve_flowsheet` – Solve the whole flowsheet (current model) with ipopt or another solver; returns success, termination_condition, message. Solution stays in the model.
 
-**Mutation / parameter sweep (test multiple values)**
-- `idaes.convergence_analysis` – Parameter sweep over input ranges (UniformSampling); runs model at each sample, returns iterations/time/numerical_issues per point (sequential).
-- `idaes.solve_one_point` – Set given variables to values, solve once, restore state; returns success and termination_condition (for testing a single operating point).
+**Change specs in the live model (persistent until server restarts)**  
+*Required so the model can have DOF > 0 and you can run solve_one_point / convergence_analysis.*
+- `idaes.unfix_variables` – Unfix given variable paths (frees DOF). Use e.g. to unfix valve outlet temperatures so you can sweep feed flow.
+- `idaes.fix_variables` – Set variables to values and fix them (e.g. swap specs or set phase split 0.0 → 0.001).
+- `idaes.set_constraints_active` – **Fix/unfix constraints**: activate (`active=True`) or deactivate (`active=False`) constraints by path. Use to remove redundant specs (e.g. duplicate temperature constraint).
+- `idaes.set_variable_bounds` – Set lower/upper bounds on variables (setlb/setub). Use for optimization (bound decision variables) or to relax bounds when infeasibility_explanation suggests it.
+
+**Test multiple values (after freeing DOF)**
+- `idaes.solve_one_point` – Set given variables to values, solve once, **restore** state; for testing one operating point. Only works if DOF ≥ 0 after the temporary fixes (so unfix some specs first if DOF was 0).
+- `idaes.convergence_analysis` – Parameter sweep over input ranges (UniformSampling); runs model at each sample, returns iterations/time/numerical_issues per point (sequential). Requires DOF ≥ 0 for the sweep inputs.
 
 
 ## Model diagnostics workflow (for real insight)

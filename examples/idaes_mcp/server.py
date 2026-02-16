@@ -778,4 +778,147 @@ def start_mcp_server(
         except Exception as e:
             return {"success": False, "termination_condition": "", "message": "", "error": str(e)}
 
+    @server.tool(name="idaes.unfix_variables")
+    def unfix_variables(paths: list[str]) -> dict[str, Any]:
+        """Unfix the given variables in the live model (persistent until server restarts).
+
+        Use this to free degrees of freedom so you can run solve_one_point or convergence_analysis with different values. With DOF=0, any extra fix in solve_one_point makes DOF negative and the solver fails; unfix specs here first (e.g. valve outlet temperatures), then test new operating points.
+
+        Args:
+            paths: List of Pyomo variable path strings (e.g. ["m.fs.Effect1Valve_1643611.control_volume.properties_out[0.0].temperature"]).
+
+        Returns:
+            unfixed: Number of variables unfixed.
+            not_found: List of paths that could not be resolved.
+            degrees_of_freedom: Model DOF after unfixing.
+            error: Set if a path resolved to a non-variable or unfix failed.
+        """
+        not_found: list[str] = []
+        unfixed = 0
+        for path in paths:
+            comp = m.find_component(path)
+            if comp is None:
+                not_found.append(path)
+                continue
+            if not hasattr(comp, "unfix"):
+                return {"unfixed": unfixed, "not_found": not_found, "degrees_of_freedom": degrees_of_freedom(m), "error": f"Not a variable (no unfix): {path}"}
+            try:
+                comp.unfix()
+                unfixed += 1
+            except Exception as e:
+                return {"unfixed": unfixed, "not_found": not_found, "degrees_of_freedom": degrees_of_freedom(m), "error": f"Unfix failed for {path}: {e}"}
+        return {"unfixed": unfixed, "not_found": not_found, "degrees_of_freedom": degrees_of_freedom(m)}
+
+    @server.tool(name="idaes.fix_variables")
+    def fix_variables(variable_values: dict[str, float]) -> dict[str, Any]:
+        """Set variables to the given values and fix them in the live model (persistent until server restarts).
+
+        Use to swap specs: e.g. unfix valve outlet temperatures (unfix_variables), then fix a different variable (e.g. feed flow_mol) here so the model stays square. Also use to correct brittle specs (e.g. phase split 0.0 -> 0.001).
+
+        Args:
+            variable_values: Dict mapping Pyomo variable path to value (e.g. {"m.fs.Preheater_1643423.cold_side.properties_in[0.0].flow_mol": 1200.0}).
+
+        Returns:
+            fixed: Number of variables set and fixed.
+            not_found: List of paths that could not be resolved.
+            degrees_of_freedom: Model DOF after fixing.
+            error: Set if a path resolved to a non-variable or fix failed.
+        """
+        not_found: list[str] = []
+        fixed = 0
+        for path, val in variable_values.items():
+            comp = m.find_component(path)
+            if comp is None:
+                not_found.append(path)
+                continue
+            if hasattr(comp, "fix"):
+                try:
+                    comp.fix(float(val))
+                    fixed += 1
+                except Exception as e:
+                    return {"fixed": fixed, "not_found": not_found, "degrees_of_freedom": degrees_of_freedom(m), "error": f"Fix failed for {path}: {e}"}
+            elif hasattr(comp, "value"):
+                try:
+                    comp.value = float(val)
+                    fixed += 1
+                except Exception as e:
+                    return {"fixed": fixed, "not_found": not_found, "degrees_of_freedom": degrees_of_freedom(m), "error": f"Set value failed for {path}: {e}"}
+            else:
+                return {"fixed": fixed, "not_found": not_found, "degrees_of_freedom": degrees_of_freedom(m), "error": f"Not a variable: {path}"}
+        return {"fixed": fixed, "not_found": not_found, "degrees_of_freedom": degrees_of_freedom(m)}
+
+    @server.tool(name="idaes.set_constraints_active")
+    def set_constraints_active(paths: list[str], active: bool) -> dict[str, Any]:
+        """Activate or deactivate constraints in the live model (persistent until server restarts).
+
+        This is the constraint analogue of fix/unfix: active=True means the constraint is included in the model (\"fixed in\"); active=False means it is excluded (\"unfixed\"). Use to remove redundant or problematic specs: e.g. if temperature is both fixed and constrained, deactivate the extra constraint (active=False) so the model is not over-constrained. Use list_constraints / dulmage_mendelsohn_partition to find constraint paths.
+
+        Args:
+            paths: List of Pyomo constraint path strings (e.g. ["m.fs.unit.equality_temperature"]).
+            active: True to activate (include in model), False to deactivate (exclude).
+
+        Returns:
+            changed: Number of constraints set to the requested active state.
+            not_found: List of paths that could not be resolved.
+            error: Set if a path resolved to a non-constraint or set failed.
+        """
+        not_found: list[str] = []
+        changed = 0
+        for path in paths:
+            comp = m.find_component(path)
+            if comp is None:
+                not_found.append(path)
+                continue
+            if not hasattr(comp, "active"):
+                return {"changed": changed, "not_found": not_found, "error": f"Not a constraint (no active): {path}"}
+            try:
+                comp.activate() if active else comp.deactivate()
+                changed += 1
+            except Exception as e:
+                return {"changed": changed, "not_found": not_found, "error": f"Set active failed for {path}: {e}"}
+        return {"changed": changed, "not_found": not_found}
+
+    @server.tool(name="idaes.set_variable_bounds")
+    def set_variable_bounds(variable_bounds: dict[str, dict[str, float | None]]) -> dict[str, Any]:
+        """Set lower and/or upper bounds on variables in the live model (persistent until server restarts).
+
+        IDAES workflow: after unfixing some variables for optimization, add bounds to constrain the solution space (variable.setlb / setub). Also use to relax bounds when infeasibility_explanation suggests loosening a bound. list_variables returns current lb/ub.
+
+        Args:
+            variable_bounds: Dict mapping Pyomo variable path to {"lower": float or None, "upper": float or None}. Omit "lower" or "upper" to leave that bound unchanged; use None to clear the bound (no limit). Example: {"m.fs.unit.flow[0]": {"lower": 0, "upper": 1000}}.
+
+        Returns:
+            changed: Number of variables whose bounds were updated.
+            not_found: List of paths that could not be resolved.
+            degrees_of_freedom: Model DOF after changes (bounds do not change DOF).
+            error: Set if a path resolved to a non-variable or setlb/setub failed.
+        """
+        not_found: list[str] = []
+        changed = 0
+        for path, bounds in variable_bounds.items():
+            comp = m.find_component(path)
+            if comp is None:
+                not_found.append(path)
+                continue
+            if not hasattr(comp, "setlb") and not hasattr(comp, "setub"):
+                return {"changed": changed, "not_found": not_found, "degrees_of_freedom": degrees_of_freedom(m), "error": f"Not a variable (no setlb/setub): {path}"}
+            try:
+                if "lower" in bounds:
+                    val = bounds["lower"]
+                    if val is None:
+                        comp.setlb(None)
+                    else:
+                        comp.setlb(float(val))
+                if "upper" in bounds:
+                    val = bounds["upper"]
+                    if val is None:
+                        comp.setub(None)
+                    else:
+                        comp.setub(float(val))
+                if "lower" in bounds or "upper" in bounds:
+                    changed += 1
+            except Exception as e:
+                return {"changed": changed, "not_found": not_found, "degrees_of_freedom": degrees_of_freedom(m), "error": f"Set bounds failed for {path}: {e}"}
+        return {"changed": changed, "not_found": not_found, "degrees_of_freedom": degrees_of_freedom(m)}
+
     server.run(transport="streamable-http")
