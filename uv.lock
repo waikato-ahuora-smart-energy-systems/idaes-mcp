@@ -4,7 +4,7 @@ requires-python = ">=3.14"
 
 [[package]]
 name = "ahuora-builder"
-version = "0.1.4"
+version = "0.1.8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "ahuora-builder-types" },
@@ -17,9 +17,9 @@ dependencies = [
     { name = "scipy" },
     { name = "typing-validation" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ce/ed/def9c1e6ee2344c85ff16336a6c4f2f724b1271df158b4bc66775a7a113d/ahuora_builder-0.1.4.tar.gz", hash = "sha256:d9b1669ed7593fbaae09b89dc7026ba9b75dbd65f045ebbc0017ab767e8d089c", size = 174890, upload-time = "2026-02-04T21:17:44.449Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/be/27/c402f40975c8deba97576a2a30c05cf393946250e8103334ec27db1f4961/ahuora_builder-0.1.8.tar.gz", hash = "sha256:4169f972eaa3bb29303432b595b87098a5521223f31710c4d754a04ef86df595", size = 180354, upload-time = "2026-02-16T23:13:45.535Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/6c/31/32f215901db0dc68280db0cab84fa0b90e705fa46dd6ee7cd16918e6026f/ahuora_builder-0.1.4-py3-none-any.whl", hash = "sha256:40439f6d779bce17416e9ef85573990be8fad2b1ce1510a1a4fb0c51b117b1e9", size = 280533, upload-time = "2026-02-04T21:17:38.374Z" },
+    { url = "https://files.pythonhosted.org/packages/6f/af/707327c062be35abc133d17782ae30eb6520a81d898bb53667a348f58909/ahuora_builder-0.1.8-py3-none-any.whl", hash = "sha256:cb06d46fcfb04fffcff819aca232415ffdc0ea573ed8a3ccc8525008b5e135f3", size = 288276, upload-time = "2026-02-16T23:13:47.57Z" },
 ]
 
 [[package]]
@@ -453,7 +453,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "ahuora-builder", specifier = "==0.1.4" },
+    { name = "ahuora-builder", specifier = "==0.1.8" },
     { name = "ahuora-builder-types", specifier = "==0.1.4" },
     { name = "ahuora-compounds", git = "https://github.com/waikato-ahuora-smart-energy-systems/PropertyPackages.git?rev=v0.0.29" },
     { name = "coolprop", specifier = ">=7.2.0" },

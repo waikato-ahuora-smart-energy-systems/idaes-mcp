@@ -10,7 +10,7 @@ dependencies = [
     "ahuora-compounds",
     "idaes-ui>=0.25.10",
     "ahuora-builder-types==0.1.4",
-    "ahuora-builder==0.1.4",
+    "ahuora-builder==0.1.8",
     "mcp>=1.13.0",
 ]
 

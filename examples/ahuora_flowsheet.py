@@ -6,6 +6,7 @@ from ahuora_builder_types.flowsheet_schema import FlowsheetSchema
 from idaes.core.util.model_diagnostics import DiagnosticsToolbox
 from idaes_mcp.server import start_mcp_server
 from harden_flowsheet import harden_model
+from ahuora_builder.methods.property_map_manipulation import update_property
 
 
 INPUT_FILE = "json/model.json"
@@ -29,6 +30,10 @@ with open(os.path.join(__location__, INPUT_FILE), 'r') as file:
     except Exception as e:
         print(e)
     flowsheet.diagnose_problems()
+
+    flowsheet.properties_map.items()
+
+    
     
     
     m = flowsheet.model
