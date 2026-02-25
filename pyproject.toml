@@ -6,14 +6,18 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "coolprop>=7.2.0",
-    "idaes-pse>=2.8.0",
+    "idaes-pse>=2.10.0",
     "ahuora-compounds",
     "idaes-ui>=0.25.10",
-    "ahuora-builder-types==0.1.4",
-    "ahuora-builder==0.1.8",
+    "ahuora-builder-types==0.1.9",
+    "ahuora-builder==0.1.9",
     "mcp>=1.13.0",
+    "pyvis>=0.3.2",
 ]
 
 
 [tool.uv.sources]
 ahuora-compounds = { git = "https://github.com/waikato-ahuora-smart-energy-systems/PropertyPackages.git", rev = "v0.0.29" }
+# Git clone ahuora-builder: https://github.com/waikato-ahuora-smart-energy-systems/ahuora-builder
+ahuora-builder = { path = "../ahuora-builder/ahuora-builder", editable = true }
+ahuora-builder-types = { path = "../ahuora-builder/ahuora-builder-types", editable = true }
