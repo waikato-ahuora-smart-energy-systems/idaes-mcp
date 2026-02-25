@@ -35,21 +35,11 @@ with open(os.path.join(__location__, INPUT_FILE), 'r') as file:
     flowsheet.initialise()
     assert flowsheet.degrees_of_freedom() == 0, "Degrees of freedom is not 0: " + str(flowsheet.degrees_of_freedom())
     flowsheet.report_statistics()
-    try:
-        flowsheet.solve()
-    except Exception as e:
-        print(e)
-    flowsheet.diagnose_problems()
-
-    flowsheet.properties_map.items()
-
-    
-
 
     m = flowsheet.model
 
     dt = DiagnosticsToolbox(m)
-
+    dt.report_numerical_issues()
     dt.display_constraints_with_large_residuals()
     dt.display_variables_at_or_outside_bounds()
     dt.display_variables_with_extreme_jacobians()
@@ -58,6 +48,28 @@ with open(os.path.join(__location__, INPUT_FILE), 'r') as file:
     my_scaler = AutoScaler()
     my_scaler.scale_model(m)
     dt.display_variables_with_extreme_jacobians()
+
+    print("POST SCALING:")
+    dt.report_numerical_issues()
+    dt.display_constraints_with_large_residuals()
+    dt.display_variables_at_or_outside_bounds()
+    dt.display_variables_with_extreme_jacobians()
+
+    try:
+        flowsheet.solve()
+    except Exception as e:
+        print(e)
+    # flowsheet.diagnose_problems()
+
+    flowsheet.properties_map.items()
+
+    
+
+
+
+    
+
+    
 
 
     graph, number_component_map, constraint_variable_map = generate_model_graph(m,"bipartite")
