@@ -1,0 +1,736 @@
+(idaes-mcp) bd65@grer-g312-20:/Scratch/idaes-mcp/examples$ uv run ahuora_flowsheet.py
+Warning: No variables found for {property_key} with indexes {discrete_indexes}. This may be expected in the milk property package, which doesn't have a gas phase.
+Warning: No variables found for {property_key} with indexes {discrete_indexes}. This may be expected in the milk property package, which doesn't have a gas phase.
+Warning: No variables found for {property_key} with indexes {discrete_indexes}. This may be expected in the milk property package, which doesn't have a gas phase.
+Warning: No variables found for {property_key} with indexes {discrete_indexes}. This may be expected in the milk property package, which doesn't have a gas phase.
+Warning: No variables found for {property_key} with indexes {discrete_indexes}. This may be expected in the milk property package, which doesn't have a gas phase.
+Warning: No variables found for {property_key} with indexes {discrete_indexes}. This may be expected in the milk property package, which doesn't have a gas phase.
+Warning: No variables found for {property_key} with indexes {discrete_indexes}. This may be expected in the milk property package, which doesn't have a gas phase.
+Warning: No variables found for {property_key} with indexes {discrete_indexes}. This may be expected in the milk property package, which doesn't have a gas phase.
+Warning: No variables found for {property_key} with indexes {discrete_indexes}. This may be expected in the milk property package, which doesn't have a gas phase.
+Warning: No variables found for {property_key} with indexes {discrete_indexes}. This may be expected in the milk property package, which doesn't have a gas phase.
+Warning: No variables found for {property_key} with indexes {discrete_indexes}. This may be expected in the milk property package, which doesn't have a gas phase.
+Warning: No variables found for {property_key} with indexes {discrete_indexes}. This may be expected in the milk property package, which doesn't have a gas phase.
+Warning: No variables found for {property_key} with indexes {discrete_indexes}. This may be expected in the milk property package, which doesn't have a gas phase.
+Warning: No variables found for {property_key} with indexes {discrete_indexes}. This may be expected in the milk property package, which doesn't have a gas phase.
+Warning: No variables found for {property_key} with indexes {discrete_indexes}. This may be expected in the milk property package, which doesn't have a gas phase.
+Warning: No variables found for {property_key} with indexes {discrete_indexes}. This may be expected in the milk property package, which doesn't have a gas phase.
+Warning: No variables found for {property_key} with indexes {discrete_indexes}. This may be expected in the milk property package, which doesn't have a gas phase.
+Warning: No variables found for {property_key} with indexes {discrete_indexes}. This may be expected in the milk property package, which doesn't have a gas phase.
+Warning: No variables found for {property_key} with indexes {discrete_indexes}. This may be expected in the milk property package, which doesn't have a gas phase.
+Warning: No variables found for {property_key} with indexes {discrete_indexes}. This may be expected in the milk property package, which doesn't have a gas phase.
+Warning: No variables found for {property_key} with indexes {discrete_indexes}. This may be expected in the milk property package, which doesn't have a gas phase.
+Initialisation is disabled for this scenario.
+Order of initialisation: ['fs.Preheater_1643423', 'fs.PCD_1643435', 'fs.DCH_1643531', 'fs.Pump1_1643540', 'fs.Direct Steam Injection1_1643570', 'fs.Valve3_1643582', 'fs.Phase Separator1_1643585', 'fs.Effect1Valve_1643611', 'fs.Effect 1_1643614', 'fs.Phase Separator2_1643623', 'fs.Effect2Valve_1644970', 'fs.Effect2_1644877', 'fs.E2PhaseSep_1644981', 'fs.Valve6_1645189', 'fs.Effect 3_1645192', 'fs.Phase Separator6_1645201', 'fs.Translator3_1646331', 'fs.TVR Split_1646163', 'fs.Momentum Transfer Pressure Increase_1646100', 'fs.Mixer1_1646109', 'fs.Enthalpy Balance_1646106']
+
+========================================================================
+Model Statistics   
+
+Degrees of Freedom: 0 
+
+Total No. Variables: 1289 
+    No. Fixed Variables: 215
+    No. Unused Variables: 128 (Fixed):122)
+    No. Variables only in Inequalities: 0 (Fixed: 0) 
+
+Total No. Constraints: 1074 
+    No. Equality Constraints: 1074 (Deactivated: 6)
+    No. Inequality Constraints: 0 (Deactivated: 0)
+
+No. Objectives: 0 (Deactivated: 0)
+
+No. Blocks: 398 (Deactivated: 0) 
+No. Expressions: 9279 
+========================================================================
+
+====================================================================================
+Model Statistics
+
+    Jacobian Condition Number: 7.585E+19
+
+------------------------------------------------------------------------------------
+2 WARNINGS
+
+    WARNING: 1 Constraint with large residuals (>1.0E-05)
+    WARNING: 47 Variables at or outside bounds (tol=0.0E+00)
+
+------------------------------------------------------------------------------------
+8 Cautions
+
+    Caution: 157 Variables with value close to their bounds (abs=1.0E-04, rel=1.0E-04)
+    Caution: 103 Variables with value close to zero (tol=1.0E-08)
+    Caution: 254 Variables with extreme value (<1.0E-04 or >1.0E+04)
+    Caution: 14 Constraints with mismatched terms
+    Caution: 88 Constraints with potential cancellation of terms
+    Caution: 317 Variables with extreme Jacobian column norms (<1.0E-04 or >1.0E+04)
+    Caution: 194 Constraints with extreme Jacobian row norms (<1.0E-04 or >1.0E+04)
+    Caution: 525 extreme Jacobian Entries (<1.0E-04 or >1.0E+04)
+
+------------------------------------------------------------------------------------
+Suggested next steps:
+
+    display_constraints_with_large_residuals()
+    compute_infeasibility_explanation()
+    display_variables_at_or_outside_bounds()
+
+====================================================================================
+====================================================================================
+The following constraint(s) have large residuals (>1.0E-05):
+
+    fs.Preheater_1643423.cold_side.properties_in[0.0].constraints.flow_mass: 8.20000E-01
+
+====================================================================================
+====================================================================================
+The following variable(s) have values at or outside their bounds (tol=0.0E+00):
+
+    fs.Translator3_1646331.properties_in[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Preheater_1643423.cold_side.properties_in[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Preheater_1643423.cold_side.properties_out[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.PCD_1643435.properties_milk_in[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.PCD_1643435.properties_mixed_unheated[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.PCD_1643435.properties_out[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.DCH_1643531.properties_milk_in[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.DCH_1643531.properties_mixed_unheated[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.DCH_1643531.properties_out[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Pump1_1643540.control_volume.properties_in[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Pump1_1643540.control_volume.properties_out[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Direct Steam Injection1_1643570.properties_milk_in[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Direct Steam Injection1_1643570.properties_mixed_unheated[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Direct Steam Injection1_1643570.properties_out[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Valve3_1643582.control_volume.properties_in[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Valve3_1643582.control_volume.properties_out[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Phase Separator1_1643585.mixed_state[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Phase Separator1_1643585.outlet_1_state[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Phase Separator1_1643585.outlet_2_state[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Translator1_1643606.properties_in[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Effect1Valve_1643611.control_volume.properties_in[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Effect1Valve_1643611.control_volume.properties_out[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Effect 1_1643614.cold_side.properties_in[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Effect 1_1643614.cold_side.properties_out[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Phase Separator2_1643623.mixed_state[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Phase Separator2_1643623.outlet_1_state[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Phase Separator2_1643623.outlet_2_state[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Translator2_1643722.properties_in[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.DeSuperheater1_1643948.heat_loss[0.0] (fixed): value=0.0 bounds=(0, None)
+    fs.DeSuperheater1_1643948.pressure_loss[0.0] (fixed): value=0.0 bounds=(0, None)
+    fs.Effect2Valve_1644970.control_volume.properties_in[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Effect2Valve_1644970.control_volume.properties_out[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Effect2_1644877.cold_side.properties_in[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Effect2_1644877.cold_side.properties_out[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.E2PhaseSep_1644981.mixed_state[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.E2PhaseSep_1644981.outlet_1_state[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.E2PhaseSep_1644981.outlet_2_state[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.E2Translator_1644754.properties_in[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.E2MVRDesup_1645185.heat_loss[0.0] (fixed): value=0.0 bounds=(0, None)
+    fs.E2MVRDesup_1645185.pressure_loss[0.0] (fixed): value=0.0 bounds=(0, None)
+    fs.Valve6_1645189.control_volume.properties_in[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Valve6_1645189.control_volume.properties_out[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Effect 3_1645192.cold_side.properties_in[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Effect 3_1645192.cold_side.properties_out[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Phase Separator6_1645201.mixed_state[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Phase Separator6_1645201.outlet_1_state[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Phase Separator6_1645201.outlet_2_state[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+
+====================================================================================
+====================================================================================
+The following variable(s) correspond to Jacobian columns with extreme norms(<1.0E-04 or>1.0E+04):
+
+    fs.Effect 1_1643614.cold_side.properties_out[0.0].mole_frac_phase_comp[Vap,water]: 4.572E+07
+    fs.Phase Separator2_1643623.split_fraction[0.0,outlet_2,Vap]: 4.572E+07
+    fs.Phase Separator2_1643623.mixed_state[0.0].mole_frac_phase_comp[Vap,water]: 4.568E+07
+    fs.Phase Separator2_1643623.outlet_2_state[0.0].mole_frac_phase_comp[Vap,water]: 4.568E+07
+    fs.Effect2_1644877.cold_side.properties_out[0.0].mole_frac_phase_comp[Vap,water]: 2.026E+07
+    fs.E2PhaseSep_1644981.split_fraction[0.0,outlet_2,Vap]: 2.026E+07
+    fs.E2PhaseSep_1644981.mixed_state[0.0].mole_frac_phase_comp[Vap,water]: 2.024E+07
+    fs.E2PhaseSep_1644981.outlet_2_state[0.0].mole_frac_phase_comp[Vap,water]: 2.024E+07
+    fs.Valve3_1643582.control_volume.properties_in[0.0].mole_frac_phase_comp[Liq,water]: 1.119E+07
+    fs.Pump1_1643540.control_volume.properties_out[0.0].mole_frac_phase_comp[Liq,water]: 1.048E+07
+    fs.Pump1_1643540.control_volume.properties_in[0.0].mole_frac_phase_comp[Liq,water]: 9.989E+06
+    fs.Valve3_1643582.control_volume.properties_out[0.0].mole_frac_phase_comp[Liq,water]: 9.983E+06
+    fs.Phase Separator1_1643585.mixed_state[0.0].mole_frac_phase_comp[Liq,water]: 9.973E+06
+    fs.Effect1Valve_1643611.control_volume.properties_in[0.0].mole_frac_phase_comp[Liq,water]: 9.936E+06
+    fs.Phase Separator1_1643585.outlet_1_state[0.0].mole_frac_phase_comp[Liq,water]: 9.936E+06
+    fs.Phase Separator1_1643585.split_fraction[0.0,outlet_2,Liq]: 9.923E+06
+    fs.Effect 1_1643614.cold_side.properties_in[0.0].mole_frac_phase_comp[Liq,water]: 7.482E+06
+    fs.Effect1Valve_1643611.control_volume.properties_out[0.0].mole_frac_phase_comp[Liq,water]: 7.482E+06
+    fs.Preheater_1643423.cold_side.properties_out[0.0].mole_frac_phase_comp[Liq,water]: 6.631E+06
+    fs.Phase Separator4_1643965.split_fraction[0.0,outlet_2,Liq]: 4.984E+06
+    fs.Effect 1_1643614.delta_temperature_out[0.0]: 3.716E+06
+    fs.Effect 1_1643614.delta_temperature_in[0.0]: 3.022E+06
+    fs.Effect 1_1643614.cold_side.properties_out[0.0].mole_frac_phase_comp[Liq,water]: 2.848E+06
+    fs.Phase Separator2_1643623.mixed_state[0.0].mole_frac_phase_comp[Liq,water]: 2.845E+06
+    fs.Phase Separator2_1643623.outlet_1_state[0.0].mole_frac_phase_comp[Liq,water]: 2.843E+06
+    fs.Effect2Valve_1644970.control_volume.properties_in[0.0].mole_frac_phase_comp[Liq,water]: 2.843E+06
+    fs.Phase Separator4_1643965.split_fraction[0.0,outlet_2,Vap]: 2.820E+06
+    fs.Phase Separator2_1643623.split_fraction[0.0,outlet_2,Liq]: 2.800E+06
+    fs.Effect2_1644877.cold_side.properties_in[0.0].mole_frac_phase_comp[Liq,water]: 2.506E+06
+    fs.Effect2Valve_1644970.control_volume.properties_out[0.0].mole_frac_phase_comp[Liq,water]: 2.506E+06
+    fs.Effect1Valve_1643611.control_volume.properties_out[0.0].mole_frac_phase_comp[Vap,water]: 2.479E+06
+    fs.Effect 1_1643614.cold_side.properties_in[0.0].mole_frac_phase_comp[Vap,water]: 2.479E+06
+    fs.Phase Separator4_1645186.split_fraction[0.0,outlet_2,Liq]: 2.183E+06
+    fs.Preheater_1643423.cold_side.properties_in[0.0].mole_frac_phase_comp[Liq,water]: 1.572E+06
+    fs.Valve3_1643582.control_volume.properties_out[0.0].mole_frac_phase_comp[Vap,water]: 1.204E+06
+    fs.Phase Separator1_1643585.mixed_state[0.0].mole_frac_phase_comp[Vap,water]: 1.203E+06
+    fs.Phase Separator1_1643585.outlet_2_state[0.0].mole_frac_phase_comp[Vap,water]: 1.203E+06
+    fs.Phase Separator1_1643585.split_fraction[0.0,outlet_2,Vap]: 1.203E+06
+    fs.Effect2_1644877.delta_temperature_out[0.0]: 1.112E+06
+    fs.Effect2_1644877.delta_temperature_in[0.0]: 1.047E+06
+    fs.Valve2_1643551.ratioP[0.0]: 1.000E+06
+    fs.Phase Separator4_1645186.split_fraction[0.0,outlet_2,Vap]: 6.600E+05
+    fs.Effect2_1644877.cold_side.properties_out[0.0].mole_frac_phase_comp[Liq,water]: 5.980E+05
+    fs.E2PhaseSep_1644981.mixed_state[0.0].mole_frac_phase_comp[Liq,water]: 5.974E+05
+    fs.Valve6_1645189.control_volume.properties_in[0.0].mole_frac_phase_comp[Liq,water]: 5.973E+05
+    fs.E2PhaseSep_1644981.outlet_1_state[0.0].mole_frac_phase_comp[Liq,water]: 5.973E+05
+    fs.E2PhaseSep_1644981.split_fraction[0.0,outlet_2,Liq]: 5.545E+05
+    fs.Effect 3_1645192.cold_side.properties_in[0.0].mole_frac_phase_comp[Liq,water]: 5.185E+05
+    fs.Valve6_1645189.control_volume.properties_out[0.0].mole_frac_phase_comp[Liq,water]: 5.185E+05
+    fs.Pump1_1643540.control_volume.properties_in[0.0].mole_frac_phase_comp[Vap,water]: 4.962E+05
+    fs.Effect 3_1645192.cold_side.properties_out[0.0].mole_frac_phase_comp[Liq,water]: 4.935E+05
+    fs.Phase Separator6_1645201.mixed_state[0.0].mole_frac_phase_comp[Liq,water]: 4.930E+05
+    fs.Phase Separator6_1645201.outlet_1_state[0.0].mole_frac_phase_comp[Liq,water]: 4.922E+05
+    fs.Phase Separator6_1645201.split_fraction[0.0,outlet_2,Liq]: 4.553E+05
+    fs.Effect 3_1645192.cold_side.properties_out[0.0].mole_frac_phase_comp[Vap,water]: 3.901E+05
+    fs.Phase Separator6_1645201.split_fraction[0.0,outlet_2,Vap]: 3.899E+05
+    fs.Phase Separator6_1645201.mixed_state[0.0].mole_frac_phase_comp[Vap,water]: 3.897E+05
+    fs.Phase Separator6_1645201.outlet_2_state[0.0].mole_frac_phase_comp[Vap,water]: 3.897E+05
+    fs.Effect2Valve_1644970.control_volume.properties_out[0.0].mole_frac_phase_comp[Vap,water]: 3.799E+05
+    fs.Effect2_1644877.cold_side.properties_in[0.0].mole_frac_phase_comp[Vap,water]: 3.799E+05
+    fs.Preheater_1643423.delta_temperature_in[0.0]: 3.390E+05
+    fs.Preheater_1643423.delta_temperature_out[0.0]: 3.373E+05
+    fs.Valve3_1643582.control_volume.properties_in[0.0].mole_frac_phase_comp[Liq,milk_solid]: 1.662E+05
+    fs.Pump1_1643540.control_volume.properties_out[0.0].mole_frac_comp[water]: 1.423E+05
+    fs.Direct Steam Injection1_1643570.properties_milk_in[0.0].mole_frac_comp[water]: 1.423E+05
+    fs.Direct Steam Injection1_1643570.properties_out[0.0].mole_frac_comp[water]: 1.423E+05
+    fs.Direct Steam Injection1_1643570.properties_mixed_unheated[0.0].mole_frac_comp[water]: 1.423E+05
+    fs.Valve3_1643582.control_volume.properties_in[0.0].mole_frac_comp[water]: 1.423E+05
+    fs.Pump1_1643540.control_volume.properties_out[0.0].mole_frac_phase_comp[Liq,milk_solid]: 1.422E+05
+    fs.Pump1_1643540.control_volume.properties_in[0.0].mole_frac_phase_comp[Liq,milk_solid]: 1.267E+05
+    fs.Valve3_1643582.control_volume.properties_out[0.0].mole_frac_phase_comp[Liq,milk_solid]: 1.266E+05
+    fs.Phase Separator1_1643585.mixed_state[0.0].mole_frac_phase_comp[Liq,milk_solid]: 1.265E+05
+    fs.Effect1Valve_1643611.control_volume.properties_in[0.0].mole_frac_phase_comp[Liq,milk_solid]: 1.255E+05
+    fs.Phase Separator1_1643585.outlet_1_state[0.0].mole_frac_phase_comp[Liq,milk_solid]: 1.255E+05
+    fs.Valve3_1643582.control_volume.properties_in[0.0].temperature: 1.178E+05
+    fs.Pump1_1643540.control_volume.properties_out[0.0].temperature: 1.165E+05
+    fs.Valve3_1643582.control_volume.properties_out[0.0].temperature: 1.164E+05
+    fs.Pump1_1643540.control_volume.properties_in[0.0].temperature: 1.160E+05
+    fs.Phase Separator1_1643585.mixed_state[0.0].temperature: 1.154E+05
+    fs.Effect1Valve_1643611.control_volume.properties_in[0.0].temperature: 1.154E+05
+    fs.Phase Separator1_1643585.outlet_1_state[0.0].temperature: 1.154E+05
+    fs.Effect 1_1643614.cold_side.properties_in[0.0].temperature: 1.128E+05
+    fs.Preheater_1643423.cold_side.properties_out[0.0].temperature: 1.087E+05
+    fs.Direct Steam Injection1_1643570.properties_out[0.0].mole_frac_phase_comp[Liq,water]: 1.009E+05
+    fs.Direct Steam Injection1_1643570.properties_mixed_unheated[0.0].mole_frac_phase_comp[Liq,water]: 1.009E+05
+    fs.Direct Steam Injection1_1643570.properties_milk_in[0.0].mole_frac_phase_comp[Liq,water]: 1.006E+05
+    fs.Valve3_1643582.control_volume.properties_in[0.0].mole_frac_phase_comp[Vap,water]: 1.000E+05
+    fs.Pump1_1643540.control_volume.properties_out[0.0].mole_frac_phase_comp[Vap,water]: 1.000E+05
+    fs.Direct Steam Injection1_1643570.properties_out[0.0].mole_frac_phase_comp[Vap,water]: 1.000E+05
+    fs.Direct Steam Injection1_1643570.properties_mixed_unheated[0.0].mole_frac_phase_comp[Vap,water]: 1.000E+05
+    fs.Direct Steam Injection1_1643570.properties_milk_in[0.0].mole_frac_phase_comp[Vap,water]: 1.000E+05
+    fs.Direct Steam Injection1_1643570.properties_milk_in[0.0]._mole_frac_tbub[Vap,Liq,water]: 1.000E+05
+    fs.Direct Steam Injection1_1643570.properties_mixed_unheated[0.0]._mole_frac_tbub[Vap,Liq,water]: 1.000E+05
+    fs.Direct Steam Injection1_1643570.properties_out[0.0]._mole_frac_tbub[Vap,Liq,water]: 1.000E+05
+    fs.Valve3_1643582.ratioP[0.0]: 1.000E+05
+    fs.Valve3_1643582.control_volume.properties_in[0.0]._mole_frac_tbub[Vap,Liq,water]: 1.000E+05
+    fs.Pump1_1643540.control_volume.properties_out[0.0]._mole_frac_tbub[Vap,Liq,water]: 1.000E+05
+    fs.Valve6_1645189.control_volume.properties_out[0.0].mole_frac_phase_comp[Vap,water]: 9.486E+04
+    fs.Effect 3_1645192.cold_side.properties_in[0.0].mole_frac_phase_comp[Vap,water]: 9.486E+04
+    fs.Preheater_1643423.cold_side.properties_out[0.0].mole_frac_comp[water]: 8.542E+04
+    fs.PCD_1643435.properties_milk_in[0.0].mole_frac_comp[water]: 8.542E+04
+    fs.PCD_1643435.properties_out[0.0].mole_frac_comp[water]: 8.540E+04
+    fs.PCD_1643435.properties_mixed_unheated[0.0].mole_frac_comp[water]: 8.540E+04
+    fs.DCH_1643531.properties_milk_in[0.0].mole_frac_comp[water]: 8.540E+04
+    fs.Phase Separator1_1643585.outlet_1_state[0.0].mole_frac_comp[water]: 8.539E+04
+    fs.Effect1Valve_1643611.control_volume.properties_in[0.0].mole_frac_comp[water]: 8.539E+04
+    fs.DCH_1643531.properties_out[0.0].mole_frac_comp[water]: 8.539E+04
+    fs.DCH_1643531.properties_mixed_unheated[0.0].mole_frac_comp[water]: 8.539E+04
+    fs.Pump1_1643540.control_volume.properties_in[0.0].mole_frac_comp[water]: 8.539E+04
+    fs.Valve3_1643582.control_volume.properties_out[0.0].mole_frac_comp[water]: 8.538E+04
+    fs.Phase Separator1_1643585.mixed_state[0.0].mole_frac_comp[water]: 8.538E+04
+    fs.Phase Separator1_1643585.outlet_2_state[0.0].mole_frac_comp[water]: 8.488E+04
+    fs.Translator1_1643606.properties_in[0.0].mole_frac_comp[water]: 8.488E+04
+    fs.Effect2_1644877.area: 8.332E+04
+    fs.Effect 3_1645192.area: 7.727E+04
+    fs.Translator1_1643606.properties_in[0.0].mole_frac_phase_comp[Vap,water]: 7.496E+04
+    fs.Effect 1_1643614.cold_side.properties_out[0.0].temperature: 7.452E+04
+    fs.Effect 1_1643614.cold_side.properties_in[0.0].mole_frac_phase_comp[Liq,milk_solid]: 7.424E+04
+    fs.Effect1Valve_1643611.control_volume.properties_out[0.0].mole_frac_phase_comp[Liq,milk_solid]: 7.424E+04
+    fs.Phase Separator1_1643585.outlet_1_state[0.0].mole_frac_phase_comp[Vap,water]: 7.142E+04
+    fs.Effect1Valve_1643611.control_volume.properties_in[0.0].mole_frac_phase_comp[Vap,water]: 7.142E+04
+    fs.Momentum Transfer Pressure Increase_1647748.control_volume.properties_in[0.0].flow_mol: 6.699E+04
+    fs.E1MVR_1643733.control_volume.properties_in[0.0].flow_mol: 6.647E+04
+    fs.E2MVR_1644755.control_volume.properties_in[0.0].flow_mol: 6.620E+04
+    fs.Momentum Transfer Pressure Increase_1646100.control_volume.properties_in[0.0].flow_mol: 6.501E+04
+    fs.Preheater_1643423.cold_side.properties_out[0.0].mole_frac_phase_comp[Liq,milk_solid]: 6.319E+04
+    fs.Phase Separator1_1643585.outlet_2_state[0.0].mole_frac_phase_comp[Liq,water]: 6.119E+04
+    fs.DCH_1643531.properties_mixed_unheated[0.0].mole_frac_phase_comp[Liq,water]: 6.077E+04
+    fs.PCD_1643435.properties_out[0.0].mole_frac_phase_comp[Liq,water]: 6.076E+04
+    fs.DCH_1643531.properties_out[0.0].mole_frac_phase_comp[Liq,water]: 6.075E+04
+    fs.PCD_1643435.properties_mixed_unheated[0.0].mole_frac_phase_comp[Liq,water]: 6.060E+04
+    fs.PCD_1643435.properties_milk_in[0.0].mole_frac_phase_comp[Liq,water]: 6.043E+04
+    fs.DCH_1643531.properties_milk_in[0.0].mole_frac_phase_comp[Liq,water]: 6.041E+04
+    fs.Translator1_1643606.properties_in[0.0].mole_frac_phase_comp[Liq,water]: 6.037E+04
+    fs.Preheater_1643423.cold_side.properties_out[0.0].mole_frac_phase_comp[Vap,water]: 6.000E+04
+    fs.DCH_1643531.properties_out[0.0].mole_frac_phase_comp[Vap,water]: 6.000E+04
+    fs.Preheater_1643423.cold_side.properties_in[0.0].mole_frac_phase_comp[Vap,water]: 6.000E+04
+    fs.DCH_1643531.properties_mixed_unheated[0.0].mole_frac_phase_comp[Vap,water]: 6.000E+04
+    fs.PCD_1643435.properties_out[0.0].mole_frac_phase_comp[Vap,water]: 6.000E+04
+    fs.DCH_1643531.properties_milk_in[0.0].mole_frac_phase_comp[Vap,water]: 6.000E+04
+    fs.PCD_1643435.properties_mixed_unheated[0.0].mole_frac_phase_comp[Vap,water]: 6.000E+04
+    fs.PCD_1643435.properties_milk_in[0.0].mole_frac_phase_comp[Vap,water]: 6.000E+04
+    fs.Preheater_1643423.cold_side.properties_out[0.0]._mole_frac_tbub[Vap,Liq,water]: 6.000E+04
+    fs.PCD_1643435.properties_milk_in[0.0]._mole_frac_tbub[Vap,Liq,water]: 6.000E+04
+    fs.PCD_1643435.properties_mixed_unheated[0.0]._mole_frac_tbub[Vap,Liq,water]: 6.000E+04
+    fs.PCD_1643435.properties_out[0.0]._mole_frac_tbub[Vap,Liq,water]: 6.000E+04
+    fs.DCH_1643531.properties_milk_in[0.0]._mole_frac_tbub[Vap,Liq,water]: 6.000E+04
+    fs.DCH_1643531.properties_mixed_unheated[0.0]._mole_frac_tbub[Vap,Liq,water]: 6.000E+04
+    fs.DCH_1643531.properties_out[0.0]._mole_frac_tbub[Vap,Liq,water]: 6.000E+04
+    fs.Pump1_1643540.ratioP[0.0]: 6.000E+04
+    fs.Pump1_1643540.control_volume.properties_in[0.0]._mole_frac_tbub[Vap,Liq,water]: 6.000E+04
+    fs.Phase Separator1_1643585.mixed_state[0.0]._mole_frac_tbub[Vap,Liq,water]: 6.000E+04
+    fs.Phase Separator1_1643585.outlet_1_state[0.0]._mole_frac_tbub[Vap,Liq,water]: 6.000E+04
+    fs.Phase Separator1_1643585.outlet_2_state[0.0]._mole_frac_tbub[Vap,Liq,water]: 6.000E+04
+    fs.Translator1_1643606.properties_in[0.0]._mole_frac_tbub[Vap,Liq,water]: 6.000E+04
+    fs.Effect1Valve_1643611.ratioP[0.0]: 6.000E+04
+    fs.Effect1Valve_1643611.control_volume.properties_in[0.0]._mole_frac_tbub[Vap,Liq,water]: 6.000E+04
+    fs.Preheater_1643423.cold_side.properties_in[0.0]._mole_frac_tbub[Vap,Liq,water]: 6.000E+04
+    fs.Valve3_1643582.control_volume.properties_out[0.0]._mole_frac_tbub[Vap,Liq,water]: 6.000E+04
+    fs.Effect2Valve_1644970.control_volume.properties_in[0.0].mole_frac_phase_comp[Vap,water]: 5.474E+04
+    fs.Phase Separator2_1643623.outlet_1_state[0.0].mole_frac_phase_comp[Vap,water]: 5.474E+04
+    fs.Translator2_1643722.properties_in[0.0].mole_frac_phase_comp[Vap,water]: 5.444E+04
+    fs.Phase Separator2_1643623.mixed_state[0.0].temperature: 5.306E+04
+    fs.Valve2_1643551.control_volume.properties_out[0.0].flow_mol: 5.095E+04
+    fs.Valve2_1643551.control_volume.properties_in[0.0].flow_mol: 5.095E+04
+    fs.E2Translator_1644754.properties_in[0.0].mole_frac_phase_comp[Vap,water]: 5.085E+04
+    fs.Mixer1_1646109.inlet_2_state[0.0].flow_mol: 5.084E+04
+    fs.Mixer1_1647757.inlet_2_state[0.0].flow_mol: 5.003E+04
+    fs.Mixer1_1647757.mixed_state[0.0].flow_mol: 4.968E+04
+    fs.Enthalpy Balance_1647754.control_volume.properties_in[0.0].flow_mol: 4.968E+04
+    fs.Momentum Transfer Pressure Increase_1647748.control_volume.properties_out[0.0].flow_mol: 4.963E+04
+    fs.Mixer1_1647757.inlet_1_state[0.0].flow_mol: 4.963E+04
+    fs.Momentum Transfer Pressure Increase_1647748.properties_isentropic[0.0].flow_mol: 4.963E+04
+    fs.Mixer1_1646109.mixed_state[0.0].flow_mol: 4.846E+04
+    fs.Enthalpy Balance_1646106.control_volume.properties_in[0.0].flow_mol: 4.846E+04
+    fs.E2MVR_1644755.control_volume.properties_out[0.0].flow_mol: 4.806E+04
+    fs.E2MVRDesup_1645185.inlet_steam_state[0.0].flow_mol: 4.806E+04
+    fs.Translator3_1646331.properties_in[0.0].mole_frac_phase_comp[Vap,water]: 4.800E+04
+    fs.Direct Steam Injection1_1643570.properties_out[0.0].phase_frac[Vap]: 4.799E+04
+    fs.Valve3_1643582.control_volume.properties_in[0.0].flow_mol_phase[Vap]: 4.797E+04
+    fs.Effect 3_1645192.hot_side.properties_in[0.0].flow_mol: 4.787E+04
+    fs.Enthalpy Balance_1646106.control_volume.properties_out[0.0].flow_mol: 4.787E+04
+    fs.E2MVR_1644755.properties_isentropic[0.0].flow_mol: 4.785E+04
+    fs.Direct Steam Injection1_1643570.properties_mixed_unheated[0.0].phase_frac[Vap]: 4.782E+04
+    fs.Pump1_1643540.control_volume.properties_out[0.0].flow_mol_phase[Vap]: 4.779E+04
+    fs.E1MVR_1643733.control_volume.properties_out[0.0].flow_mol: 4.773E+04
+    fs.DeSuperheater1_1643948.inlet_steam_state[0.0].flow_mol: 4.773E+04
+    fs.Enthalpy Balance_1647754.control_volume.properties_out[0.0].flow_mol: 4.770E+04
+    fs.DCH_1643531.properties_out[0.0].phase_frac[Vap]: 4.769E+04
+    fs.DCH_1643531.properties_mixed_unheated[0.0].phase_frac[Vap]: 4.769E+04
+    fs.PCD_1643435.properties_out[0.0].phase_frac[Vap]: 4.769E+04
+    fs.Translator1_1643606.properties_in[0.0].phase_frac[Vap]: 4.767E+04
+    fs.Phase Separator1_1643585.outlet_2_state[0.0].flow_mol_phase[Vap]: 4.767E+04
+    fs.Valve3_1643582.control_volume.properties_out[0.0].flow_mol_phase[Vap]: 4.767E+04
+    fs.Pump1_1643540.control_volume.properties_in[0.0].flow_mol_phase[Vap]: 4.767E+04
+    fs.Phase Separator1_1643585.outlet_1_state[0.0].flow_mol_phase[Vap]: 4.766E+04
+    fs.Effect1Valve_1643611.control_volume.properties_in[0.0].flow_mol_phase[Vap]: 4.766E+04
+    fs.Phase Separator1_1643585.mixed_state[0.0].flow_mol_phase[Vap]: 4.762E+04
+    fs.E1MVR_1643733.properties_isentropic[0.0].flow_mol: 4.760E+04
+    fs.Effect 1_1643614.hot_side.properties_in[0.0].flow_mol: 4.744E+04
+    fs.DeSuperheater1_1643948.outlet_state[0.0].flow_mol: 4.744E+04
+    fs.Phase Separator4_1643965.outlet_2_state[0.0].flow_mol: 4.737E+04
+    fs.Effect2_1644877.hot_side.properties_in[0.0].flow_mol: 4.732E+04
+    fs.E2MVRDesup_1645185.outlet_state[0.0].flow_mol: 4.732E+04
+    fs.Translator2_1643722.properties_in[0.0].phase_frac[Vap]: 4.704E+04
+    fs.Phase Separator2_1643623.outlet_2_state[0.0].flow_mol_phase[Vap]: 4.703E+04
+    fs.Effect 1_1643614.cold_side.properties_out[0.0].flow_mol_phase[Vap]: 4.703E+04
+    fs.Phase Separator2_1643623.outlet_1_state[0.0].flow_mol_phase[Vap]: 4.703E+04
+    fs.Effect2Valve_1644970.control_volume.properties_in[0.0].flow_mol_phase[Vap]: 4.703E+04
+    fs.Effect1Valve_1643611.control_volume.properties_out[0.0].flow_mol_phase[Vap]: 4.702E+04
+    fs.Effect 1_1643614.cold_side.properties_in[0.0].flow_mol_phase[Vap]: 4.702E+04
+    fs.Phase Separator2_1643623.mixed_state[0.0].flow_mol_phase[Vap]: 4.698E+04
+    fs.Momentum Transfer Pressure Increase_1646100.control_volume.properties_out[0.0].flow_mol: 4.693E+04
+    fs.Mixer1_1646109.inlet_1_state[0.0].flow_mol: 4.693E+04
+    fs.Momentum Transfer Pressure Increase_1646100.properties_isentropic[0.0].flow_mol: 4.693E+04
+    fs.E2Translator_1644754.properties_in[0.0].phase_frac[Vap]: 4.683E+04
+    fs.E2PhaseSep_1644981.outlet_2_state[0.0].flow_mol_phase[Vap]: 4.683E+04
+    fs.Effect2_1644877.cold_side.properties_out[0.0].flow_mol_phase[Vap]: 4.683E+04
+    fs.PCD_1643435.properties_mixed_unheated[0.0].phase_frac[Vap]: 4.683E+04
+    fs.E2PhaseSep_1644981.outlet_1_state[0.0].flow_mol_phase[Vap]: 4.683E+04
+    fs.Valve6_1645189.control_volume.properties_in[0.0].flow_mol_phase[Vap]: 4.683E+04
+    fs.Preheater_1643423.cold_side.properties_out[0.0].flow_mol_phase[Vap]: 4.680E+04
+    fs.Effect2Valve_1644970.control_volume.properties_out[0.0].flow_mol_phase[Vap]: 4.678E+04
+    fs.Effect2_1644877.cold_side.properties_in[0.0].flow_mol_phase[Vap]: 4.678E+04
+    fs.E2PhaseSep_1644981.mixed_state[0.0].flow_mol_phase[Vap]: 4.678E+04
+    fs.Translator3_1646331.properties_in[0.0].phase_frac[Vap]: 4.658E+04
+    fs.Phase Separator6_1645201.outlet_2_state[0.0].flow_mol_phase[Vap]: 4.658E+04
+    fs.Effect 3_1645192.cold_side.properties_out[0.0].flow_mol_phase[Vap]: 4.658E+04
+    fs.Phase Separator6_1645201.outlet_1_state[0.0].flow_mol_phase[Vap]: 4.658E+04
+    fs.Valve6_1645189.control_volume.properties_out[0.0].flow_mol_phase[Vap]: 4.658E+04
+    fs.Effect 3_1645192.cold_side.properties_in[0.0].flow_mol_phase[Vap]: 4.658E+04
+    fs.Phase Separator6_1645201.mixed_state[0.0].flow_mol_phase[Vap]: 4.653E+04
+    fs.Cooler2_1647876.control_volume.properties_in[0.0].flow_mol: 4.600E+04
+    fs.Phase Separator4_1645186.outlet_2_state[0.0].flow_mol: 4.600E+04
+    fs.Cooler1_1646200.control_volume.properties_in[0.0].flow_mol: 4.597E+04
+    fs.Preheater_1643423.cold_side.properties_in[0.0].flow_mol_phase[Vap]: 4.524E+04
+    fs.Phase Separator2_1643623.outlet_1_state[0.0].temperature: 4.164E+04
+    fs.Effect2Valve_1644970.control_volume.properties_in[0.0].temperature: 4.164E+04
+    fs.Effect2_1644877.cold_side.properties_in[0.0].temperature: 4.129E+04
+    fs.Phase Separator2_1643623.outlet_1_state[0.0].mole_frac_comp[water]: 3.946E+04
+    fs.Effect2Valve_1644970.control_volume.properties_in[0.0].mole_frac_comp[water]: 3.946E+04
+    fs.Effect1Valve_1643611.control_volume.properties_out[0.0].mole_frac_comp[water]: 3.906E+04
+    fs.Effect 1_1643614.cold_side.properties_out[0.0].mole_frac_comp[water]: 3.906E+04
+    fs.Phase Separator2_1643623.mixed_state[0.0].mole_frac_comp[water]: 3.906E+04
+    fs.Effect 1_1643614.cold_side.properties_in[0.0].mole_frac_comp[water]: 3.906E+04
+    fs.Phase Separator2_1643623.outlet_2_state[0.0].mole_frac_comp[water]: 3.880E+04
+    fs.Translator2_1643722.properties_in[0.0].mole_frac_comp[water]: 3.880E+04
+    fs.CowPump1_1646248.ratioP[0.0]: 3.388E+04
+    fs.Momentum Transfer Pressure Increase_1647748.ratioP[0.0]: 3.388E+04
+    fs.Phase Separator2_1643623.outlet_2_state[0.0].temperature: 3.289E+04
+    fs.E2PhaseSep_1644981.outlet_1_state[0.0].mole_frac_comp[water]: 3.025E+04
+    fs.Valve6_1645189.control_volume.properties_in[0.0].mole_frac_comp[water]: 3.025E+04
+    fs.Effect 1_1643614.area: 2.888E+04
+    fs.CowPump2_1646265.ratioP[0.0]: 2.854E+04
+    fs.Effect2Valve_1644970.control_volume.properties_out[0.0].mole_frac_comp[water]: 2.854E+04
+    fs.Effect2_1644877.cold_side.properties_out[0.0].mole_frac_comp[water]: 2.854E+04
+    fs.Effect2_1644877.cold_side.properties_in[0.0].mole_frac_comp[water]: 2.854E+04
+    fs.E2PhaseSep_1644981.mixed_state[0.0].mole_frac_comp[water]: 2.854E+04
+    fs.E2PhaseSep_1644981.outlet_1_state[0.0].mole_frac_phase_comp[Vap,water]: 2.839E+04
+    fs.Valve6_1645189.control_volume.properties_in[0.0].mole_frac_phase_comp[Vap,water]: 2.839E+04
+    fs.Effect 1_1643614.cold_side.properties_out[0.0].mole_frac_phase_comp[Liq,milk_solid]: 2.832E+04
+    fs.Phase Separator2_1643623.mixed_state[0.0].mole_frac_phase_comp[Liq,milk_solid]: 2.829E+04
+    fs.Phase Separator2_1643623.outlet_1_state[0.0].mole_frac_phase_comp[Liq,milk_solid]: 2.827E+04
+    fs.Effect2Valve_1644970.control_volume.properties_in[0.0].mole_frac_phase_comp[Liq,milk_solid]: 2.827E+04
+    fs.E2PhaseSep_1644981.outlet_2_state[0.0].mole_frac_comp[water]: 2.806E+04
+    fs.E2Translator_1644754.properties_in[0.0].mole_frac_comp[water]: 2.806E+04
+    fs.Phase Separator2_1643623.outlet_2_state[0.0].mole_frac_phase_comp[Liq,water]: 2.804E+04
+    fs.Translator2_1643722.properties_in[0.0].mole_frac_phase_comp[Liq,water]: 2.790E+04
+    fs.Effect1Valve_1643611.control_volume.properties_out[0.0]._mole_frac_tbub[Vap,Liq,water]: 2.743E+04
+    fs.Effect 1_1643614.cold_side.properties_in[0.0]._mole_frac_tbub[Vap,Liq,water]: 2.743E+04
+    fs.Effect 1_1643614.cold_side.properties_out[0.0]._mole_frac_tbub[Vap,Liq,water]: 2.743E+04
+    fs.Phase Separator2_1643623.mixed_state[0.0]._mole_frac_tbub[Vap,Liq,water]: 2.743E+04
+    fs.Phase Separator2_1643623.outlet_1_state[0.0]._mole_frac_tbub[Vap,Liq,water]: 2.743E+04
+    fs.Phase Separator2_1643623.outlet_2_state[0.0]._mole_frac_tbub[Vap,Liq,water]: 2.743E+04
+    fs.Translator2_1643722.properties_in[0.0]._mole_frac_tbub[Vap,Liq,water]: 2.743E+04
+    fs.E1MVR_1643733.ratioP[0.0]: 2.743E+04
+    fs.Effect2Valve_1644970.ratioP[0.0]: 2.743E+04
+    fs.Effect2Valve_1644970.control_volume.properties_in[0.0]._mole_frac_tbub[Vap,Liq,water]: 2.743E+04
+    fs.Effect2_1644877.cold_side.properties_out[0.0].temperature: 2.366E+04
+    fs.Effect2_1644877.cold_side.properties_in[0.0].mole_frac_phase_comp[Liq,milk_solid]: 2.339E+04
+    fs.Effect2Valve_1644970.control_volume.properties_out[0.0].mole_frac_phase_comp[Liq,milk_solid]: 2.339E+04
+    fs.Phase Separator6_1645201.outlet_1_state[0.0].mole_frac_comp[water]: 2.146E+04
+    fs.E2PhaseSep_1644981.outlet_2_state[0.0].mole_frac_phase_comp[Liq,water]: 2.141E+04
+    fs.E2Translator_1644754.properties_in[0.0].mole_frac_phase_comp[Liq,water]: 2.140E+04
+    fs.Valve6_1645189.control_volume.properties_out[0.0].mole_frac_comp[water]: 2.135E+04
+    fs.Effect 3_1645192.cold_side.properties_out[0.0].mole_frac_comp[water]: 2.135E+04
+    fs.Phase Separator6_1645201.mixed_state[0.0].mole_frac_comp[water]: 2.135E+04
+    fs.Effect 3_1645192.cold_side.properties_in[0.0].mole_frac_comp[water]: 2.135E+04
+    fs.CowPump3_1646299.ratioP[0.0]: 2.000E+04
+    fs.Effect2Valve_1644970.control_volume.properties_out[0.0]._mole_frac_tbub[Vap,Liq,water]: 1.984E+04
+    fs.Effect2_1644877.cold_side.properties_in[0.0]._mole_frac_tbub[Vap,Liq,water]: 1.984E+04
+    fs.Effect2_1644877.cold_side.properties_out[0.0]._mole_frac_tbub[Vap,Liq,water]: 1.984E+04
+    fs.E2PhaseSep_1644981.mixed_state[0.0]._mole_frac_tbub[Vap,Liq,water]: 1.984E+04
+    fs.E2PhaseSep_1644981.outlet_1_state[0.0]._mole_frac_tbub[Vap,Liq,water]: 1.984E+04
+    fs.E2PhaseSep_1644981.outlet_2_state[0.0]._mole_frac_tbub[Vap,Liq,water]: 1.984E+04
+    fs.E2Translator_1644754.properties_in[0.0]._mole_frac_tbub[Vap,Liq,water]: 1.984E+04
+    fs.E2MVR_1644755.ratioP[0.0]: 1.984E+04
+    fs.Valve6_1645189.ratioP[0.0]: 1.984E+04
+    fs.Valve6_1645189.control_volume.properties_in[0.0]._mole_frac_tbub[Vap,Liq,water]: 1.984E+04
+    fs.Phase Separator6_1645201.outlet_2_state[0.0].mole_frac_comp[water]: 1.982E+04
+    fs.Translator3_1646331.properties_in[0.0].mole_frac_comp[water]: 1.982E+04
+    fs.E2PhaseSep_1644981.mixed_state[0.0].temperature: 1.719E+04
+    fs.Effect 3_1645192.delta_temperature_out[0.0]: 1.610E+04
+    fs.Phase Separator6_1645201.outlet_2_state[0.0].mole_frac_phase_comp[Liq,water]: 1.519E+04
+    fs.Translator3_1646331.properties_in[0.0].mole_frac_phase_comp[Liq,water]: 1.518E+04
+    fs.E2PhaseSep_1644981.outlet_2_state[0.0].temperature: 1.461E+04
+    fs.Phase Separator6_1645201.outlet_1_state[0.0].mole_frac_phase_comp[Vap,water]: 1.404E+04
+    fs.Momentum Transfer Pressure Increase_1646100.ratioP[0.0]: 1.400E+04
+    fs.CowPump4_1646282.ratioP[0.0]: 1.400E+04
+    fs.Translator3_1646331.properties_in[0.0]._mole_frac_tbub[Vap,Liq,water]: 1.400E+04
+    fs.Valve6_1645189.control_volume.properties_out[0.0]._mole_frac_tbub[Vap,Liq,water]: 1.400E+04
+    fs.Effect 3_1645192.cold_side.properties_in[0.0]._mole_frac_tbub[Vap,Liq,water]: 1.400E+04
+    fs.Effect 3_1645192.cold_side.properties_out[0.0]._mole_frac_tbub[Vap,Liq,water]: 1.400E+04
+    fs.Phase Separator6_1645201.mixed_state[0.0]._mole_frac_tbub[Vap,Liq,water]: 1.400E+04
+    fs.Phase Separator6_1645201.outlet_1_state[0.0]._mole_frac_tbub[Vap,Liq,water]: 1.400E+04
+    fs.Phase Separator6_1645201.outlet_2_state[0.0]._mole_frac_tbub[Vap,Liq,water]: 1.400E+04
+    fs.Preheater_1643423.cold_side.properties_in[0.0].mole_frac_phase_comp[Liq,milk_solid]: 1.298E+04
+
+====================================================================================
+WARNING: model contains export suffix 'scaling_factor' that contains 221
+component keys that are not exported as part of the NL file.  Skipping.
+WARNING: model contains export suffix 'scaling_factor' that contains 221
+component keys that are not exported as part of the NL file.  Skipping.
+====================================================================================
+The following variable(s) correspond to Jacobian columns with extreme norms(<1.0E-04 or>1.0E+04):
+
+
+====================================================================================
+POST SCALING:
+WARNING: model contains export suffix 'scaling_factor' that contains 221
+component keys that are not exported as part of the NL file.  Skipping.
+====================================================================================
+Model Statistics
+
+    Jacobian Condition Number: 1.418E+11
+
+------------------------------------------------------------------------------------
+2 WARNINGS
+
+    WARNING: 1 Constraint with large residuals (>1.0E-05)
+    WARNING: 47 Variables at or outside bounds (tol=0.0E+00)
+
+------------------------------------------------------------------------------------
+5 Cautions
+
+    Caution: 148 Variables with value close to their bounds (abs=1.0E-04, rel=1.0E-04)
+    Caution: 103 Variables with value close to zero (tol=1.0E-08)
+    Caution: 14 Constraints with mismatched terms
+    Caution: 88 Constraints with potential cancellation of terms
+    Caution: 242 extreme Jacobian Entries (<1.0E-04 or >1.0E+04)
+
+------------------------------------------------------------------------------------
+Suggested next steps:
+
+    display_constraints_with_large_residuals()
+    compute_infeasibility_explanation()
+    display_variables_at_or_outside_bounds()
+
+====================================================================================
+====================================================================================
+The following constraint(s) have large residuals (>1.0E-05):
+
+    fs.Preheater_1643423.cold_side.properties_in[0.0].constraints.flow_mass: 1.72165E-02
+
+====================================================================================
+====================================================================================
+The following variable(s) have values at or outside their bounds (tol=0.0E+00):
+
+    fs.Translator3_1646331.properties_in[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Preheater_1643423.cold_side.properties_in[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Preheater_1643423.cold_side.properties_out[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.PCD_1643435.properties_milk_in[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.PCD_1643435.properties_mixed_unheated[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.PCD_1643435.properties_out[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.DCH_1643531.properties_milk_in[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.DCH_1643531.properties_mixed_unheated[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.DCH_1643531.properties_out[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Pump1_1643540.control_volume.properties_in[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Pump1_1643540.control_volume.properties_out[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Direct Steam Injection1_1643570.properties_milk_in[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Direct Steam Injection1_1643570.properties_mixed_unheated[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Direct Steam Injection1_1643570.properties_out[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Valve3_1643582.control_volume.properties_in[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Valve3_1643582.control_volume.properties_out[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Phase Separator1_1643585.mixed_state[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Phase Separator1_1643585.outlet_1_state[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Phase Separator1_1643585.outlet_2_state[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Translator1_1643606.properties_in[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Effect1Valve_1643611.control_volume.properties_in[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Effect1Valve_1643611.control_volume.properties_out[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Effect 1_1643614.cold_side.properties_in[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Effect 1_1643614.cold_side.properties_out[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Phase Separator2_1643623.mixed_state[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Phase Separator2_1643623.outlet_1_state[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Phase Separator2_1643623.outlet_2_state[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Translator2_1643722.properties_in[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.DeSuperheater1_1643948.heat_loss[0.0] (fixed): value=0.0 bounds=(0, None)
+    fs.DeSuperheater1_1643948.pressure_loss[0.0] (fixed): value=0.0 bounds=(0, None)
+    fs.Effect2Valve_1644970.control_volume.properties_in[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Effect2Valve_1644970.control_volume.properties_out[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Effect2_1644877.cold_side.properties_in[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Effect2_1644877.cold_side.properties_out[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.E2PhaseSep_1644981.mixed_state[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.E2PhaseSep_1644981.outlet_1_state[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.E2PhaseSep_1644981.outlet_2_state[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.E2Translator_1644754.properties_in[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.E2MVRDesup_1645185.heat_loss[0.0] (fixed): value=0.0 bounds=(0, None)
+    fs.E2MVRDesup_1645185.pressure_loss[0.0] (fixed): value=0.0 bounds=(0, None)
+    fs.Valve6_1645189.control_volume.properties_in[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Valve6_1645189.control_volume.properties_out[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Effect 3_1645192.cold_side.properties_in[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Effect 3_1645192.cold_side.properties_out[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Phase Separator6_1645201.mixed_state[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Phase Separator6_1645201.outlet_1_state[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+    fs.Phase Separator6_1645201.outlet_2_state[0.0]._mole_frac_tbub[Vap,Liq,milk_solid] (free): value=0.0 bounds=(0, None)
+
+====================================================================================
+WARNING: model contains export suffix 'scaling_factor' that contains 221
+component keys that are not exported as part of the NL file.  Skipping.
+====================================================================================
+The following variable(s) correspond to Jacobian columns with extreme norms(<1.0E-04 or>1.0E+04):
+
+
+====================================================================================
+=== Starting Solve ===
+WARNING: model contains export suffix 'scaling_factor' that contains 221
+component keys that are not exported as part of the NL file.  Skipping.
+Ipopt 3.13.2: max_iter=1000
+
+
+******************************************************************************
+This program contains Ipopt, a library for large-scale nonlinear optimization.
+ Ipopt is released as open source code under the Eclipse Public License (EPL).
+         For more information visit http://projects.coin-or.org/Ipopt
+
+This version of Ipopt was compiled from source code available at
+    https://github.com/IDAES/Ipopt as part of the Institute for the Design of
+    Advanced Energy Systems Process Systems Engineering Framework (IDAES PSE
+    Framework) Copyright (c) 2018-2019. See https://github.com/IDAES/idaes-pse.
+
+This version of Ipopt was compiled using HSL, a collection of Fortran codes
+    for large-scale scientific computation.  All technical papers, sales and
+    publicity material resulting from use of the HSL codes within IPOPT must
+    contain the following acknowledgement:
+        HSL, a collection of Fortran codes for large-scale scientific
+        computation. See http://www.hsl.rl.ac.uk.
+******************************************************************************
+
+This is Ipopt version 3.13.2, running with linear solver ma27.
+
+Number of nonzeros in equality constraint Jacobian...:     3606
+Number of nonzeros in inequality constraint Jacobian.:        0
+Number of nonzeros in Lagrangian Hessian.............:     1863
+
+Total number of variables............................:     1068
+                     variables with only lower bounds:      181
+                variables with lower and upper bounds:      608
+                     variables with only upper bounds:        0
+Total number of equality constraints.................:     1068
+Total number of inequality constraints...............:        0
+        inequality constraints with only lower bounds:        0
+   inequality constraints with lower and upper bounds:        0
+        inequality constraints with only upper bounds:        0
+
+iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
+   0  0.0000000e+00 3.70e+05 1.00e+00  -1.0 0.00e+00    -  0.00e+00 0.00e+00   0
+   1  0.0000000e+00 3.38e+05 1.02e+07  -1.0 3.24e+06    -  6.73e-04 8.78e-02h  2
+   2  0.0000000e+00 3.19e+05 1.31e+07  -1.0 2.46e+06    -  1.83e-01 5.50e-02h  2
+   3  0.0000000e+00 3.17e+05 1.33e+07  -1.0 2.04e+06    -  2.71e-01 8.00e-03h  4
+   4  0.0000000e+00 3.16e+05 1.33e+07  -1.0 1.98e+06    -  3.87e-01 1.79e-03h  6
+   5  0.0000000e+00 1.62e+05 2.49e+08  -1.0 7.44e+05    -  2.91e-01 4.83e-01h  2
+   6  0.0000000e+00 1.48e+05 2.28e+08  -1.0 6.18e+06    -  2.31e-02 8.64e-02h  1
+   7  0.0000000e+00 1.47e+05 2.27e+08  -1.0 5.75e+06    -  1.07e-01 4.29e-03h  1
+   8  0.0000000e+00 1.47e+05 2.27e+08  -1.0 5.73e+06    -  1.10e-01 4.54e-05h  1
+   9r 0.0000000e+00 1.47e+05 1.00e+03   1.3 0.00e+00    -  0.00e+00 2.27e-07R  2
+iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
+  10r 0.0000000e+00 1.45e+05 9.76e+02   1.3 2.03e+04    -  7.07e-02 9.91e-04f  1
+  11r 0.0000000e+00 6.55e+04 1.97e+03   1.3 4.92e+02    -  4.15e-02 7.25e-02f  1
+  12r 0.0000000e+00 3.85e+04 2.27e+03   1.3 6.34e+02    -  7.30e-02 7.72e-02f  1
+  13r 0.0000000e+00 3.01e+05 3.10e+03   1.3 4.54e+02    -  2.01e-01 2.74e-01f  1
+  14r 0.0000000e+00 7.80e+05 1.82e+04   1.3 2.30e+02    -  7.33e-01 5.50e-01f  1
+  15r 0.0000000e+00 7.00e+05 8.18e+03   1.3 9.39e+01    -  7.19e-01 1.03e-01f  1
+  16r 0.0000000e+00 6.23e+05 4.03e+04   1.3 8.35e+01    -  3.20e-01 1.09e-01f  1
+  17r 0.0000000e+00 1.42e+05 7.03e+03   1.3 7.64e+01    -  7.86e-01 1.00e+00f  1
+  18r 0.0000000e+00 5.42e+03 2.20e+02   1.3 1.58e+01    -  9.90e-01 1.00e+00f  1
+  19r 0.0000000e+00 5.40e+03 5.85e+01   1.3 4.75e+00    -  9.91e-01 1.00e+00f  1
+iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
+  20r 0.0000000e+00 7.92e+04 1.64e+03  -0.1 2.05e+02    -  7.87e-01 5.01e-01f  1
+  21r 0.0000000e+00 3.62e+05 2.64e+03  -0.1 1.98e+02    -  9.89e-01 6.36e-01f  1
+  22r 0.0000000e+00 9.45e+05 2.21e+03  -0.1 1.49e+02    -  9.38e-01 5.64e-01f  1
+  23r 0.0000000e+00 8.10e+05 1.46e+03  -0.1 8.81e-01   2.0 2.23e-01 1.43e-01f  1
+  24r 0.0000000e+00 6.64e+05 1.20e+03  -0.1 1.75e+00   1.5 1.24e-01 1.80e-01f  1
+  25r 0.0000000e+00 6.10e+05 1.11e+03  -0.1 1.98e+00   1.0 1.56e-01 8.14e-02f  1
+  26r 0.0000000e+00 2.44e+05 2.86e+03  -0.1 3.39e+00   0.6 8.57e-01 5.98e-01f  1
+  27r 0.0000000e+00 1.78e+05 5.47e+03  -0.1 5.20e+00   0.1 1.00e+00 2.71e-01f  1
+  28r 0.0000000e+00 1.49e+05 6.98e+03  -0.1 2.28e+02    -  1.00e+00 1.81e-01f  1
+  29r 0.0000000e+00 4.74e+04 1.88e+03  -0.1 1.53e+02    -  1.00e+00 7.01e-01f  1
+iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
+  30r 0.0000000e+00 5.05e+02 3.65e+01  -0.1 8.43e+01    -  1.00e+00 1.00e+00f  1
+  31r 0.0000000e+00 2.35e+03 3.79e+03  -0.8 1.90e+02    -  1.00e+00 5.25e-01f  1
+  32r 0.0000000e+00 7.64e+02 2.34e+03  -0.8 4.70e+02    -  1.00e+00 7.79e-01f  1
+  33r 0.0000000e+00 2.38e+01 5.53e+00  -0.8 7.41e+01    -  1.00e+00 1.00e+00f  1
+  34r 0.0000000e+00 7.14e+01 2.15e+03  -1.5 2.15e+02    -  8.65e-01 6.18e-01f  1
+  35r 0.0000000e+00 8.42e+01 3.49e+03  -1.5 7.91e+02    -  6.81e-01 2.54e-01f  1
+  36r 0.0000000e+00 6.14e+01 5.41e+02  -1.5 1.94e+02    -  6.71e-01 9.89e-01f  1
+  37r 0.0000000e+00 4.88e+01 4.52e+02  -1.5 7.68e+01    -  1.00e+00 3.18e-01f  1
+  38r 0.0000000e+00 2.20e+01 5.14e+00  -1.5 4.13e+01    -  1.00e+00 1.00e+00f  1
+  39r 0.0000000e+00 9.34e-02 2.74e+00  -1.5 4.58e+00    -  1.00e+00 1.00e+00h  1
+iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
+  40r 0.0000000e+00 5.99e-02 3.57e-01  -1.5 7.54e-01    -  1.00e+00 1.00e+00h  1
+  41r 0.0000000e+00 3.50e+00 2.31e+02  -2.2 1.36e+02    -  8.42e-01 9.20e-01f  1
+  42r 0.0000000e+00 6.01e+00 2.81e+02  -2.2 5.97e+02    -  8.38e-01 3.92e-01f  1
+  43r 0.0000000e+00 1.16e+01 1.35e+01  -2.2 3.56e+02    -  1.00e+00 1.00e+00f  1
+  44r 0.0000000e+00 1.14e-02 3.54e+00  -2.2 1.30e+00    -  1.00e+00 1.00e+00h  1
+  45r 0.0000000e+00 9.50e-03 2.36e+00  -2.2 9.19e-01    -  1.00e+00 1.00e+00h  1
+  46r 0.0000000e+00 2.93e-03 3.01e-01  -2.2 1.09e-01    -  1.00e+00 1.00e+00h  1
+  47r 0.0000000e+00 2.75e-03 4.72e-02  -2.2 5.64e-03    -  1.00e+00 1.00e+00h  1
+  48r 0.0000000e+00 1.81e+00 5.84e+01  -3.3 1.03e+02    -  7.78e-01 6.85e-01f  1
+  49r 0.0000000e+00 3.11e+01 9.86e+01  -3.3 2.53e+03    -  4.12e-01 2.76e-01f  1
+iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
+  50r 0.0000000e+00 3.20e+01 1.08e+02  -3.3 1.53e+03    -  5.73e-01 4.52e-01f  1
+  51r 0.0000000e+00 2.07e+01 1.98e+01  -3.3 7.81e+02    -  6.48e-01 7.18e-01f  1
+  52r 0.0000000e+00 1.49e+01 1.38e+02  -3.3 1.56e+02    -  1.00e+00 2.86e-01f  1
+  53r 0.0000000e+00 4.74e-01 1.86e-01  -3.3 1.03e+02    -  1.00e+00 1.00e+00f  1
+  54r 0.0000000e+00 2.55e-04 1.16e-02  -3.3 4.96e+00    -  1.00e+00 1.00e+00h  1
+  55r 0.0000000e+00 2.66e-01 1.24e+01  -5.0 6.17e+01    -  9.65e-01 9.04e-01f  1
+  56r 0.0000000e+00 3.57e-01 8.08e+02  -5.0 3.18e+03    -  2.80e-01 1.54e-02f  1
+  57r 0.0000000e+00 7.58e+00 7.85e+02  -5.0 2.02e+04    -  2.44e-05 2.00e-02f  1
+  58r 0.0000000e+00 7.06e+00 7.30e+02  -5.0 1.67e+03    -  6.25e-02 6.93e-02h  1
+  59r 0.0000000e+00 7.24e+00 8.68e+02  -5.0 1.62e+03    -  1.88e-01 4.97e-02f  1
+iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
+  60r 0.0000000e+00 7.02e+00 1.09e+03  -5.0 1.75e+03    -  3.44e-01 3.00e-02f  1
+  61r 0.0000000e+00 6.65e+00 1.59e+03  -5.0 1.51e+03    -  7.26e-01 5.36e-02h  1
+  62r 0.0000000e+00 6.59e+00 1.07e+03  -5.0 5.13e+02    -  1.00e+00 9.30e-03h  1
+  63r 0.0000000e+00 2.63e+00 5.35e+02  -5.0 3.97e+02    -  1.00e+00 6.01e-01f  1
+  64r 0.0000000e+00 8.25e-03 2.28e-02  -5.0 1.65e+02    -  1.00e+00 1.00e+00f  1
+  65r 0.0000000e+00 2.57e-04 1.69e-04  -5.0 8.51e+00    -  1.00e+00 1.00e+00h  1
+  66r 0.0000000e+00 5.68e-04 4.33e+01  -7.5 8.67e+00    -  7.95e-01 7.03e-01f  1
+  67r 0.0000000e+00 3.27e-01 6.00e+01  -7.5 7.88e+03    -  1.43e-01 9.70e-02f  1
+  68r 0.0000000e+00 4.03e-01 6.72e+01  -7.5 7.13e+03    -  8.43e-02 5.76e-02f  1
+  69r 0.0000000e+00 3.86e-01 3.25e+02  -7.5 7.92e-03  -0.4 6.05e-01 4.19e-02f  1
+iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
+  70r 0.0000000e+00 3.85e-01 3.17e+02  -7.5 6.76e+03    -  2.38e-02 3.75e-03f  1
+  71r 0.0000000e+00 1.12e+00 2.43e+02  -7.5 6.74e+03    -  2.28e-01 1.79e-01f  1
+  72r 0.0000000e+00 1.74e+00 2.62e+02  -7.5 5.56e+03    -  8.93e-01 2.29e-01f  1
+  73r 0.0000000e+00 8.00e+00 2.93e+01  -7.5 4.29e+03    -  5.90e-01 8.82e-01h  1
+  74r 0.0000000e+00 1.05e+00 3.75e+00  -7.5 5.09e+02    -  1.00e+00 8.82e-01h  1
+  75r 0.0000000e+00 2.90e-03 4.31e-04  -7.5 6.00e+01    -  1.00e+00 1.00e+00f  1
+  76r 0.0000000e+00 1.39e-04 4.31e-04  -7.5 1.62e-01    -  1.00e+00 1.00e+00h  1
+  77r 0.0000000e+00 6.62e-05 1.57e-04  -7.5 2.13e-02    -  1.00e+00 1.00e+00h  1
+  78r 0.0000000e+00 6.62e-05 1.57e-04  -7.5 1.49e-03    -  1.00e+00 1.00e+00h  1
+  79r 0.0000000e+00 6.62e-05 5.45e-11  -7.5 2.50e-06    -  1.00e+00 1.00e+00h  1
+iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
+  80r 0.0000000e+00 2.65e-04 4.80e-01  -9.0 4.72e-01    -  8.30e-01 9.82e-01h  1
+  81r 0.0000000e+00 2.40e+01 3.92e+00  -9.0 3.93e+04    -  2.34e-01 1.62e-01f  1
+  82r 0.0000000e+00 2.43e+01 4.21e+01  -9.0 3.28e+04    -  1.00e+00 4.61e-02h  1
+  83r 0.0000000e+00 2.42e+01 4.21e+01  -9.0 3.11e+04    -  8.59e-02 1.48e-03h  1
+  84r 0.0000000e+00 2.62e+01 6.00e+02  -9.0 3.10e+04    -  1.00e+00 8.18e-02h  1
+  85r 0.0000000e+00 2.87e+01 5.38e+02  -9.0 2.84e+04    -  1.71e-01 1.02e-01h  1
+  86r 0.0000000e+00 3.12e+02 6.55e+01  -9.0 2.56e+04    -  1.00e+00 8.78e-01h  1
+  87r 0.0000000e+00 6.35e+00 6.98e-03  -9.0 3.11e+03    -  1.00e+00 1.00e+00h  1
+  88r 0.0000000e+00 5.93e-05 9.19e-04  -9.0 2.92e-02    -  1.00e+00 1.00e+00h  1
+  89r 0.0000000e+00 2.35e-03 9.96e+01  -9.0 1.32e+00    -  1.00e+00 1.91e-06h 20
+
+Number of Iterations....: 89
+
+                                   (scaled)                 (unscaled)
+Objective...............:   0.0000000000000000e+00    0.0000000000000000e+00
+Dual infeasibility......:   6.8213055920683522e-05    6.8213055920683522e-05
+Constraint violation....:   5.9286117472984873e-05    5.9286117472984873e-05
+Complementarity.........:   9.0909090909101198e-10    9.0909090909101198e-10
+Overall NLP error.......:   5.9286117472984873e-05    6.8213055920683522e-05
+
+
+Number of objective function evaluations             = 131
+Number of objective gradient evaluations             = 11
+Number of equality constraint evaluations            = 131
+Number of inequality constraint evaluations          = 0
+Number of equality constraint Jacobian evaluations   = 92
+Number of inequality constraint Jacobian evaluations = 0
+Number of Lagrangian Hessian evaluations             = 90
+Total CPU secs in IPOPT (w/o function evaluations)   =      0.542
+Total CPU secs in NLP function evaluations           =     11.834
+
+EXIT: Converged to a point of local infeasibility. Problem may be infeasible.
+WARNING: Loading a SolverResults object with a warning status into
+model.name="unknown";
+    - termination condition: infeasible
+    - message from solver: Ipopt 3.13.2\x3a Converged to a locally infeasible
+      point. Problem may be infeasible.
+Property Infeasibilities:
+Property: fs.Cooler1_1646200.control_volume.properties_out[0.0].temperature, Infeasibility: 2.5011104298755527e-12
+Property: fs.Cooler2_1647876.control_volume.properties_out[0.0].temperature, Infeasibility: 1.3642420526593924e-12
+Property: fs.E1MVR_1643733.control_volume.properties_out[0.0].temperature, Infeasibility: 1.1368683772161603e-13
+Property: fs.Mixer1_1647757.inlet_2_state[0.0].temperature, Infeasibility: 5.684341886080802e-14
+Property: fs.Preheater_1643423.cold_side.properties_in[0.0].flow_mass, Infeasibility: 3.552713678800501e-15
+Property: fs.Mixer1_1646109.inlet_2_state[0.0].temperature, Infeasibility: 0.0
+Property: fs.Valve2_1643551.control_volume.properties_in[0.0].temperature, Infeasibility: 0.0
+Solver fail
