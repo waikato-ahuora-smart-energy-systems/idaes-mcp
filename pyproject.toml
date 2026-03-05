@@ -17,7 +17,12 @@ dependencies = [
 
 
 [tool.uv.sources]
-ahuora-compounds = { git = "https://github.com/waikato-ahuora-smart-energy-systems/PropertyPackages.git", rev = "v0.0.29" }
+ahuora-compounds = { path= "../Ahuora-Adaptive-Digital-Twin-Platform/backend/ahuora-compounds", editable = true }
 # Git clone ahuora-builder: https://github.com/waikato-ahuora-smart-energy-systems/ahuora-builder
-ahuora-builder = { path = "../ahuora-builder/ahuora-builder", editable = true }
-ahuora-builder-types = { path = "../ahuora-builder/ahuora-builder-types", editable = true }
+ahuora-builder = { path = "../Ahuora-Adaptive-Digital-Twin-Platform/backend/ahuora-builder", editable = true }
+ahuora-builder-types = { path = "../Ahuora-Adaptive-Digital-Twin-Platform/backend/ahuora-builder-types", editable = true }
+
+[dependency-groups]
+dev = [
+    "ipython>=9.10.0",
+]
