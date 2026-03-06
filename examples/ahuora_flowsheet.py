@@ -19,11 +19,16 @@ from pyomo.core.base.var import ScalarVar
 from math import log
 from idaes.core.util.scaling import get_scaling_factor, set_scaling_factor
 from idaes.core.scaling import AutoScaler
-from idaes.core.scaling.util import get_jacobian, report_scaling_factors, unscaled_variables_generator, unscaled_constraints_generator
+from idaes.core.scaling.util import (
+    get_jacobian, report_scaling_factors, unscaled_variables_generator, 
+    unscaled_constraints_generator
+)
+from idaes.core.util.scaling import badly_scaled_var_generator, extreme_jacobian_columns, extreme_jacobian_rows
 from idaes.core.util.model_diagnostics import SVDToolbox
 from generate_graph import generate_graph
 from ruiz_scaling import apply_ruiz_scaling
 from minimise_jacobian_condition import minimize_jacobian_condition
+from idaes.core.util.scaling import constraint_autoscale_large_jac
 
 INPUT_FILE = "json/model.json"
 
@@ -54,23 +59,39 @@ with open(os.path.join(__location__, INPUT_FILE), 'r') as file:
     # my_scaler = AutoScaler()
     # my_scaler.scale_model(m)
     # dt.display_variables_with_extreme_jacobians()
-    # for var in unscaled_variables_generator(m):
-    #     if var.local_name == "pressure":
-    #         set_scaling_factor(var,1e-5)
-    #     if var.local_name == "work":
-    #         set_scaling_factor(var,1e-5)
-    #     if var.local_name == "flow_mol":
-    #         set_scaling_factor(var,1e-4)
-    #     if var.local_name == "mole_frac_comp[milk_solid]":
-    #         set_scaling_factor(var,1e3)
-    #     if var.local_name == "mole_frac_comp[water]":
-    #         set_scaling_factor(var,1)
-    #     if var.local_name == "temperature":
-    #         set_scaling_factor(var,1e-2)
-    #     if var.local_name == "enth_mol":
-    #         set_scaling_factor(var,1e-4)
-    #     # else:
-    #     #     print("No scaling factor for variable " + var.name)
+    for var in unscaled_variables_generator(m):
+        if var.local_name == "pressure":
+            set_scaling_factor(var,1e-5)
+        if var.local_name == "deltaP[0.0]":
+            set_scaling_factor(var,1e-4)
+        if var.local_name == "deltaP_inverted[0.0]":
+            set_scaling_factor(var,1e-2)
+        if var.local_name == "work":
+            set_scaling_factor(var,1e-5)
+        # if var.local_name == "flow_mol":
+        #     set_scaling_factor(var,1e-4)
+        if var.local_name == "mole_frac_comp[milk_solid]":
+            set_scaling_factor(var,1e3)
+        if var.local_name == "mole_frac_comp[water]":
+            set_scaling_factor(var,1)
+        if var.local_name == "temperature":
+            set_scaling_factor(var,1e-2)
+        if var.local_name == "enth_mol":
+            set_scaling_factor(var,1e-4)
+        if var.local_name == "heat[0.0]":
+            set_scaling_factor(var,1e-6)
+        if var.local_name == "heat_duty_inverted[0.0]":
+            set_scaling_factor(var,1e-5)
+        if var.local_name == "phase_frac[Liq]":
+            set_scaling_factor(var,1e1)
+        if var.local_name == "phase_frac[Vap]":
+            set_scaling_factor(var,1e1)
+        if var.local_name == "work[0.0]":
+            set_scaling_factor(var,1e-4)
+        if var.local_name == "power":
+            set_scaling_factor(var,1e-4)
+        # else:
+        #     print("No scaling factor for variable " + var.name)
     
     # for cons in unscaled_constraints_generator(m):
     #     print(cons.name)
@@ -84,17 +105,20 @@ with open(os.path.join(__location__, INPUT_FILE), 'r') as file:
     #         set_scaling_factor(cons,1e2)
         
 
-    # for model in flowsheet.unit_models._unit_models.values():
-    #     model.calculate_scaling_factors()
+    for model in flowsheet.unit_models._unit_models.values():
+        model.calculate_scaling_factors()
 
-    # apply_ruiz_scaling(m)
-    # report_scaling_factors(m)
-    D = minimize_jacobian_condition(m)
+    apply_ruiz_scaling(m)
+    #report_scaling_factors(m, descend_into=True)
 
-    print("Optimal scaling matrix:")
-    print(D)
-    
-    
+    # D = minimize_jacobian_condition(m)
+
+    # print("Optimal scaling matrix:")
+    # print(D)
+    #constraint_autoscale_large_jac(m)
+    print("BADLY SCALED VARIABLES:")
+    for var, current_absolute_scaled in badly_scaled_var_generator(m):
+        print(f"{var.local_name:<90}   {pyo.value(var):<14.4f}  {(get_scaling_factor(var) or 1) :<10.4f}   {current_absolute_scaled:<10.4f}")
 
     # print("POST SCALING:")
     # dt.report_numerical_issues()
@@ -112,7 +136,7 @@ with open(os.path.join(__location__, INPUT_FILE), 'r') as file:
         flowsheet.solve()
     except Exception as e:
         print(e)
-    # flowsheet.diagnose_problems()
+    flowsheet.diagnose_problems()
 
 
     

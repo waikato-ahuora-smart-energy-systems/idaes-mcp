@@ -8,7 +8,7 @@ def apply_ruiz_scaling(m: ConcreteModel):
     Dr, Dc = ruiz_scaling(jacobian.toarray())
 
     for i, c in enumerate(nlp.clist):
-        set_scaling_factor(c, Dr[i])
+        set_scaling_factor(c, Dr[i] * -1)
 
     # for i, v in enumerate(nlp.vlist):
     #     set_scaling_factor(v, Dc[i]* -1)
