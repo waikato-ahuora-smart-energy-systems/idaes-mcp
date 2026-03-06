@@ -6,11 +6,7 @@ from math import log
 from idaes.core.scaling.util import get_jacobian
 from idaes.core.util.scaling import get_scaling_factor
 
-def generate_graph(block : pyo.Block, show_fixed: bool=False, graph_path="graph.html"):
-
-    graph, number_component_map, constraint_variable_map = generate_model_graph(block,"bipartite")
-
-    net = Network(notebook=True, cdn_resources="remote")
+def decompose_jacobian(block : pyo.Block):
     jacobian, nlp = get_jacobian(block)
 
     # dictionay [ID of of variable using python id(ConstraintData object), index of constraint in nlp.clist]
@@ -21,6 +17,15 @@ def generate_graph(block : pyo.Block, show_fixed: bool=False, graph_path="graph.
     vmap : dict[int, int] = {
         id(variable): index for index,variable in enumerate(nlp.vlist)
     }
+    return jacobian,nlp, cmap, vmap
+
+def generate_graph(block : pyo.Block, show_fixed: bool=False, graph_path="graph.html"):
+
+    graph, number_component_map, constraint_variable_map = generate_model_graph(block,"bipartite")
+
+    net = Network(notebook=True, cdn_resources="remote")
+    
+    jacobian, nlp, cmap, vmap = decompose_jacobian(block)
 
 
     for node in graph.nodes():
