@@ -108,7 +108,7 @@ with open(os.path.join(__location__, INPUT_FILE), 'r') as file:
     for model in flowsheet.unit_models._unit_models.values():
         model.calculate_scaling_factors()
 
-    apply_ruiz_scaling(m)
+    #apply_ruiz_scaling(m)
     #report_scaling_factors(m, descend_into=True)
 
     # D = minimize_jacobian_condition(m)
@@ -120,14 +120,17 @@ with open(os.path.join(__location__, INPUT_FILE), 'r') as file:
     for var, current_absolute_scaled in badly_scaled_var_generator(m):
         print(f"{var.local_name:<90}   {pyo.value(var):<14.4f}  {(get_scaling_factor(var) or 1) :<10.4f}   {current_absolute_scaled:<10.4f}")
 
+    print(" EXTREME JACOBIAN COLUMNS:")
+    for norm, variable in extreme_jacobian_columns(m):
+        print(f"{variable.name :<90}   {pyo.value(variable):<14.4f}  {(get_scaling_factor(variable) or 1) :<10.4f}   {norm:<10.4f} ")
     # print("POST SCALING:")
     # dt.report_numerical_issues()
     # dt.display_constraints_with_large_residuals()
     # dt.display_variables_at_or_outside_bounds()
     # dt.display_variables_with_extreme_jacobians()
 
-    # svd_toolbox = dt.prepare_svd_toolbox()
-    # svd_toolbox.display_underdetermined_variables_and_constraints()
+    svd_toolbox = dt.prepare_svd_toolbox()
+    svd_toolbox.display_underdetermined_variables_and_constraints()
 
     dt.report_numerical_issues()
     dt.display_near_parallel_constraints()
