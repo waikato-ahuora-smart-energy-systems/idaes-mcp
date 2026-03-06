@@ -23,7 +23,7 @@ from idaes.core.scaling.util import get_jacobian, report_scaling_factors, unscal
 from idaes.core.util.model_diagnostics import SVDToolbox
 from generate_graph import generate_graph
 from ruiz_scaling import apply_ruiz_scaling
-
+from minimise_jacobian_condition import minimize_jacobian_condition
 
 INPUT_FILE = "json/model.json"
 
@@ -87,8 +87,12 @@ with open(os.path.join(__location__, INPUT_FILE), 'r') as file:
     # for model in flowsheet.unit_models._unit_models.values():
     #     model.calculate_scaling_factors()
 
-    apply_ruiz_scaling(m)
-    report_scaling_factors(m)
+    # apply_ruiz_scaling(m)
+    # report_scaling_factors(m)
+    D = minimize_jacobian_condition(m)
+
+    print("Optimal scaling matrix:")
+    print(D)
     
     
 
