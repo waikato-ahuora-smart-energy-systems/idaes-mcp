@@ -29,6 +29,11 @@ from generate_graph import generate_graph
 from ruiz_scaling import apply_ruiz_scaling
 from minimise_jacobian_condition import minimize_jacobian_condition
 from idaes.core.util.scaling import constraint_autoscale_large_jac
+from idaes.core.scaling.custom_scaler_base import CustomScalerBase
+
+from amplpy import modules # so that conopt can be found.
+import uno_solver
+
 
 INPUT_FILE = "json/model.json"
 
@@ -59,6 +64,7 @@ with open(os.path.join(__location__, INPUT_FILE), 'r') as file:
     # my_scaler = AutoScaler()
     # my_scaler.scale_model(m)
     # dt.display_variables_with_extreme_jacobians()
+    csb = CustomScalerBase()
     for var in unscaled_variables_generator(m):
         if var.local_name == "pressure":
             set_scaling_factor(var,1e-5)
@@ -68,8 +74,8 @@ with open(os.path.join(__location__, INPUT_FILE), 'r') as file:
             set_scaling_factor(var,1e-2)
         if var.local_name == "work":
             set_scaling_factor(var,1e-5)
-        # if var.local_name == "flow_mol":
-        #     set_scaling_factor(var,1e-4)
+        if var.local_name == "flow_mol":
+            set_scaling_factor(var,1e-3)
         if var.local_name == "mole_frac_comp[milk_solid]":
             set_scaling_factor(var,1e3)
         if var.local_name == "mole_frac_comp[water]":
@@ -85,30 +91,55 @@ with open(os.path.join(__location__, INPUT_FILE), 'r') as file:
         if var.local_name == "phase_frac[Liq]":
             set_scaling_factor(var,1e1)
         if var.local_name == "phase_frac[Vap]":
-            set_scaling_factor(var,1e1)
+            set_scaling_factor(var,1e2)
         if var.local_name == "work[0.0]":
             set_scaling_factor(var,1e-4)
         if var.local_name == "power":
             set_scaling_factor(var,1e-4)
-        # else:
+    #     # else:
         #     print("No scaling factor for variable " + var.name)
     
-    # for cons in unscaled_constraints_generator(m):
-    #     print(cons.name)
-    #     if cons.local_name == "sum_mole_frac_out":
-    #         set_scaling_factor(cons,1e4)
-    #     elif cons.local_name == "sum_mole_frac":
-    #         set_scaling_factor(cons,1e4)
-    #     elif cons.local_name == "mole_frac_comp_equality[0.0,milk_solid]":
-    #         set_scaling_factor(cons,1e4)
-    #     elif cons.local_name == "mole_frac_comp_equality[0.0,water]":
-    #         set_scaling_factor(cons,1e2)
-        
+    for cons in unscaled_constraints_generator(m):
+        if cons.local_name == "overall_energy_balance[0.0]":
+            set_scaling_factor(cons,1e-8)
+        if cons.local_name == "enthalpy_balances[0.0]":
+            set_scaling_factor(cons,1e-7)
+        if cons.local_name.startswith("enthalpy_mixing_equations"):
+            set_scaling_factor(cons,1e-7)
+        if cons.local_name.startswith("molar_enthalpy_splitting_eqn"):
+            set_scaling_factor(cons,1e-7)
+        if cons.local_name.startswith("heat_duty"):
+            set_scaling_factor(cons,1e-7)
+        if cons.local_name.startswith("ratioP"):
+            set_scaling_factor(cons,1e-5)
+        if cons.local_name.startswith("ratioP_calculation"):
+            set_scaling_factor(cons,1)
+        if cons.local_name.startswith("pressure_balance"):
+            set_scaling_factor(cons,1e-5)
+        if cons.local_name.startswith("equality_constraint"):
+            set_scaling_factor(cons,1e-2)
+        if cons.local_name.startswith("pressure_equality"):
+            set_scaling_factor(cons,1e-4)
+        if cons.local_name.startswith("eq_temperature_bubble"):
+            set_scaling_factor(cons,1e-5)
+        if cons.local_name.startswith("eq_outlet_enth_mol"):
+            set_scaling_factor(cons,1e-4)
+        if cons.local_name.startswith("enth_mol_equality"):
+            set_scaling_factor(cons,1e-4)
+        if cons.local_name.startswith("flow_mol_equality"):
+            set_scaling_factor(cons,1e-3)
+        if cons.local_name.startswith("component_flow_balances"):
+            set_scaling_factor(cons,1e-3)
+        if cons.local_name.startswith("total_flow_balance"):
+            set_scaling_factor(cons,1e-3)
+        if cons.local_name.startswith("deltaP_inverted_constraint"):
+            set_scaling_factor(cons,1e-4)
 
     for model in flowsheet.unit_models._unit_models.values():
         model.calculate_scaling_factors()
 
     #apply_ruiz_scaling(m)
+    
     #report_scaling_factors(m, descend_into=True)
 
     # D = minimize_jacobian_condition(m)
@@ -122,24 +153,48 @@ with open(os.path.join(__location__, INPUT_FILE), 'r') as file:
 
     print(" EXTREME JACOBIAN COLUMNS:")
     for norm, variable in extreme_jacobian_columns(m):
-        print(f"{variable.name :<90}   {pyo.value(variable):<14.4f}  {(get_scaling_factor(variable) or 1) :<10.4f}   {norm:<10.4f} ")
+        print(f"{variable.name :<90}   {pyo.value(variable):<14.4e}  {(get_scaling_factor(variable) or 1) :<10.4e}   {norm:<10.4e} ")
+    
+    print(" EXTREME JACOBIAN ROWS:")
+    for norm, constraint in extreme_jacobian_rows(m):
+        print(f"{constraint.name :<90}   {pyo.value(constraint):<14.4e}  {(get_scaling_factor(constraint) or 1) :<10.4e}   {norm:<10.4e} ")
+
+    
     # print("POST SCALING:")
     # dt.report_numerical_issues()
     # dt.display_constraints_with_large_residuals()
     # dt.display_variables_at_or_outside_bounds()
     # dt.display_variables_with_extreme_jacobians()
 
-    svd_toolbox = dt.prepare_svd_toolbox()
-    svd_toolbox.display_underdetermined_variables_and_constraints()
+    # svd_toolbox = dt.prepare_svd_toolbox()
+    # svd_toolbox.display_underdetermined_variables_and_constraints()
 
-    dt.report_numerical_issues()
-    dt.display_near_parallel_constraints()
+    # dt.report_numerical_issues()
+    # dt.display_near_parallel_constraints()
+
+    # dt.display_constraints_with_extreme_jacobians()
+
+    m.obj = pyo.Objective(expr=0)
+
     
-    try:
-        flowsheet.solve()
-    except Exception as e:
-        print(e)
-    flowsheet.diagnose_problems()
+    import os
+
+    #IPOPT options
+    # solver = pyo.SolverFactory("ipopt")
+    # solver.options["tol"] = 1e-1
+    # solver.options["linear_solver"] = "ma57"
+    # solver.options["nlp_scaling_method"] = "gradient-based"
+
+    # UNO options
+    solver = pyo.SolverFactory("asl", solver="/home/bd65/Downloads/uno/bin/uno_ampl")
+    solver.options["preset"] = "filtersqp"
+    # solver.options["QP_solver"] = "BQPD"
+
+
+    
+    results = solver.solve(m, tee=True)
+
+    # flowsheet.diagnose_problems()
 
 
     
