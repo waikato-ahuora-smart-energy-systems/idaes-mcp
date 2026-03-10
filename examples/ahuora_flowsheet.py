@@ -181,8 +181,25 @@ with open(os.path.join(__location__, INPUT_FILE), 'r') as file:
     import os
 
     #IPOPT options
-    # solver = pyo.SolverFactory("ipopt")
-    # solver.options["tol"] = 1e-1
+    solver = pyo.SolverFactory("ipopt")
+
+    solver.options["tol"] = 1e-3
+    solver.solve(m, tee=True)
+    solver.options["tol"] = 1e-4
+    solver.solve(m, tee=True)
+    solver.options["tol"] = 1e-5
+    solver.solve(m, tee=True)
+    solver.options["tol"] = 1e-6
+    solver.solve(m, tee=True)
+    solver.options["tol"] = 1e-7
+    solver.solve(m, tee=True)
+    solver.options["tol"] = 1e-8
+    solver.solve(m, tee=True)
+    solver.options["tol"] = 1e-9
+    solver.solve(m, tee=True)
+    solver.options["tol"] = 1e-10
+    solver.solve(m, tee=True)
+
     # solver.options["linear_solver"] = "ma57"
     # solver.options["nlp_scaling_method"] = "gradient-based"
 
@@ -192,13 +209,13 @@ with open(os.path.join(__location__, INPUT_FILE), 'r') as file:
     # solver.options["preset"] = "ipopt"
     # solver.options["linear_solver"] = "mumps"
     # UNO options
-    solver = pyo.SolverFactory("asl", solver="/home/bd65/Downloads/uno/bin/uno_ampl")
-    solver.options["preset"] = "filtersqp"
-    # solver.options["QP_solver"] = "BQPD"
+    # solver = pyo.SolverFactory("asl", solver="/home/bd65/Downloads/uno/bin/uno_ampl")
+    # solver.options["preset"] = "filtersqp"
+    # # solver.options["QP_solver"] = "BQPD"
 
 
 
-    results = solver.solve(m, tee=True)
+    # results = solver.solve(m, tee=True)
 
     # flowsheet.diagnose_problems()
 
