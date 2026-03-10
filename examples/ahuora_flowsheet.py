@@ -30,7 +30,7 @@ from ruiz_scaling import apply_ruiz_scaling
 from minimise_jacobian_condition import minimize_jacobian_condition
 from idaes.core.util.scaling import constraint_autoscale_large_jac
 from idaes.core.scaling.custom_scaler_base import CustomScalerBase
-
+from watertap.core.solvers import get_solver
 from amplpy import modules # so that conopt can be found.
 
 
@@ -135,6 +135,8 @@ with open(os.path.join(__location__, INPUT_FILE), 'r') as file:
             set_scaling_factor(cons,1e-4)
         if cons.local_name.startswith("eq_phase_frac"):
             set_scaling_factor(cons,1e-2)
+        if cons.local_name.startswith("eq_mole_frac_tbub"):
+            set_scaling_factor(cons,1e-5)
 
     for model in flowsheet.unit_models._unit_models.values():
         model.calculate_scaling_factors()
@@ -167,8 +169,8 @@ with open(os.path.join(__location__, INPUT_FILE), 'r') as file:
     # dt.display_variables_at_or_outside_bounds()
     # dt.display_variables_with_extreme_jacobians()
 
-    # svd_toolbox = dt.prepare_svd_toolbox()
-    # svd_toolbox.display_underdetermined_variables_and_constraints()
+    svd_toolbox = dt.prepare_svd_toolbox()
+    svd_toolbox.display_underdetermined_variables_and_constraints()
 
     dt.report_numerical_issues()
     # dt.display_near_parallel_constraints()
@@ -181,8 +183,9 @@ with open(os.path.join(__location__, INPUT_FILE), 'r') as file:
     import os
 
     #IPOPT options
+    #solver = get_solver()
     solver = pyo.SolverFactory("ipopt")
-
+    #solver.options["linear_solver"] = "ma57"
     solver.options["tol"] = 1e-3
     solver.solve(m, tee=True)
     solver.options["tol"] = 1e-4
@@ -194,10 +197,6 @@ with open(os.path.join(__location__, INPUT_FILE), 'r') as file:
     solver.options["tol"] = 1e-7
     solver.solve(m, tee=True)
     solver.options["tol"] = 1e-8
-    solver.solve(m, tee=True)
-    solver.options["tol"] = 1e-9
-    solver.solve(m, tee=True)
-    solver.options["tol"] = 1e-10
     solver.solve(m, tee=True)
 
     # solver.options["linear_solver"] = "ma57"
