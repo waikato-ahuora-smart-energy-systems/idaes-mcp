@@ -136,8 +136,36 @@ with open(os.path.join(__location__, INPUT_FILE), 'r') as file:
         if cons.local_name.startswith("eq_phase_frac"):
             set_scaling_factor(cons,1e-2)
         if cons.local_name.startswith("eq_mole_frac_tbub"):
+            set_scaling_factor(cons,1e-3)
+        if cons.local_name.startswith("equilibrium_constraint"):
             set_scaling_factor(cons,1e-5)
-
+        if cons.local_name.startswith("eq_outlet_combined_enthalpy"):
+            set_scaling_factor(cons,1e-5)
+        if cons.local_name.startswith("eq_power_out"):
+            set_scaling_factor(cons,1e-5)
+        if cons.local_name.startswith("heat_transfer_equation"):
+            set_scaling_factor(cons,1e-4)
+        if cons.local_name.startswith("unit_heat_balance"):
+            set_scaling_factor(cons,1e-5)
+        if cons.local_name.startswith("saturated_vap_pressure_eq"):
+            set_scaling_factor(cons,1e-5)
+        if cons.local_name.startswith("eq_steam_cooled_pressure"):
+            set_scaling_factor(cons,1e-5)
+        if cons.local_name.startswith("eq_mixed_pressure"):
+            set_scaling_factor(cons,1e-5)
+        if cons.local_name.startswith("eq_outlet_pressure"):
+            set_scaling_factor(cons,1e-5)
+        if cons.local_name.startswith("eq_momentum_balance"):
+            set_scaling_factor(cons,1e-5) # pressure balance
+        if cons.local_name.startswith("intlet_water_momentum_balance"): # tim needs to fix his naming
+            set_scaling_factor(cons,1e-5)
+        if cons.local_name.startswith("ratioP_calculation"):
+            set_scaling_factor(cons,1e-3) # pressure ratio is calculated as a function of pressure.
+        if cons.local_name.startswith("saturated_vap_enthalpy"):
+            set_scaling_factor(cons,1e-5) # pressure ratio is calculated as a function of pressure.
+        if cons.local_name.startswith("overall_momentum_balance"):
+            set_scaling_factor(cons,1e-5) # pressure ratio is calculated as a function of pressure.
+        
     for model in flowsheet.unit_models._unit_models.values():
         model.calculate_scaling_factors()
 
@@ -160,7 +188,7 @@ with open(os.path.join(__location__, INPUT_FILE), 'r') as file:
     
     print(" EXTREME JACOBIAN ROWS:")
     for norm, constraint in extreme_jacobian_rows(m):
-        print(f"{constraint.name :<90}   {pyo.value(constraint):<14.4e}  {(get_scaling_factor(constraint) or 1) :<10.4e}   {norm:<10.4e} ")
+        print(f"{constraint.name :<90}   {pyo.value(constraint.lb):<14.4e}  {(get_scaling_factor(constraint) or 1) :<10.4e}   {norm:<10.4e} ")
 
     
     # print("POST SCALING:")
@@ -185,18 +213,19 @@ with open(os.path.join(__location__, INPUT_FILE), 'r') as file:
     #IPOPT options
     #solver = get_solver()
     solver = pyo.SolverFactory("ipopt")
+    solver.options["nlp_scaling_method"] = "user-scaling"
     #solver.options["linear_solver"] = "ma57"
-    solver.options["tol"] = 1e-3
-    solver.solve(m, tee=True)
-    solver.options["tol"] = 1e-4
-    solver.solve(m, tee=True)
-    solver.options["tol"] = 1e-5
-    solver.solve(m, tee=True)
-    solver.options["tol"] = 1e-6
-    solver.solve(m, tee=True)
-    solver.options["tol"] = 1e-7
-    solver.solve(m, tee=True)
-    solver.options["tol"] = 1e-8
+    # solver.options["tol"] = 1e-3
+    # solver.solve(m, tee=True)
+    # solver.options["tol"] = 1e-4
+    # solver.solve(m, tee=True)
+    # solver.options["tol"] = 1e-5
+    # solver.solve(m, tee=True)
+    # solver.options["tol"] = 1e-6
+    # solver.solve(m, tee=True)
+    # solver.options["tol"] = 1e-7
+    # solver.solve(m, tee=True)
+    # solver.options["tol"] = 1e-8
     solver.solve(m, tee=True)
 
     # solver.options["linear_solver"] = "ma57"
