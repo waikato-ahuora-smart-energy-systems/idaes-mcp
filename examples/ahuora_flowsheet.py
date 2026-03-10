@@ -32,7 +32,6 @@ from idaes.core.util.scaling import constraint_autoscale_large_jac
 from idaes.core.scaling.custom_scaler_base import CustomScalerBase
 
 from amplpy import modules # so that conopt can be found.
-import uno_solver
 
 
 INPUT_FILE = "json/model.json"
@@ -134,6 +133,8 @@ with open(os.path.join(__location__, INPUT_FILE), 'r') as file:
             set_scaling_factor(cons,1e-3)
         if cons.local_name.startswith("deltaP_inverted_constraint"):
             set_scaling_factor(cons,1e-4)
+        if cons.local_name.startswith("eq_phase_frac"):
+            set_scaling_factor(cons,1e-2)
 
     for model in flowsheet.unit_models._unit_models.values():
         model.calculate_scaling_factors()
@@ -169,7 +170,7 @@ with open(os.path.join(__location__, INPUT_FILE), 'r') as file:
     # svd_toolbox = dt.prepare_svd_toolbox()
     # svd_toolbox.display_underdetermined_variables_and_constraints()
 
-    # dt.report_numerical_issues()
+    dt.report_numerical_issues()
     # dt.display_near_parallel_constraints()
 
     # dt.display_constraints_with_extreme_jacobians()
@@ -185,13 +186,18 @@ with open(os.path.join(__location__, INPUT_FILE), 'r') as file:
     # solver.options["linear_solver"] = "ma57"
     # solver.options["nlp_scaling_method"] = "gradient-based"
 
+
+    # UNO Ipopt options
+    # solver = pyo.SolverFactory("asl", solver="/home/bd65/Downloads/uno/bin/uno_ampl")
+    # solver.options["preset"] = "ipopt"
+    # solver.options["linear_solver"] = "mumps"
     # UNO options
     solver = pyo.SolverFactory("asl", solver="/home/bd65/Downloads/uno/bin/uno_ampl")
     solver.options["preset"] = "filtersqp"
     # solver.options["QP_solver"] = "BQPD"
 
 
-    
+
     results = solver.solve(m, tee=True)
 
     # flowsheet.diagnose_problems()
