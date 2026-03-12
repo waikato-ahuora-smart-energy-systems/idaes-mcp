@@ -34,7 +34,6 @@ from watertap.core.solvers import get_solver
 from amplpy import modules # so that conopt can be found.
 from manual_scaling import apply_manual_scaling
 from idaes.core.scaling.util import (
-    get_jacobian,
     get_scaling_factor,
     jacobian_cond,
 )
@@ -68,36 +67,18 @@ def print_badly_scaled_information(m):
 def jacobian_condition_number(m):
     return jacobian_cond(m, scaled=True)
 
-def solve_with_increasing_tolerance(solver,m, tee=True, msg=""):
+def solve_with_increasing_tolerance(solver,m, tee=True):
     try:
-        print(msg)
-
         solver.options["tol"] = 1e-3
-        result = solver.solve(m, tee=tee)
-        if result.solver.termination_condition != pyo.TerminationCondition.optimal:
-            return "F1"
-        print(msg)
-        
+        solver.solve(m, tee=tee)
         solver.options["tol"] = 1e-4
-        result = solver.solve(m, tee=tee)
-        if result.solver.termination_condition != pyo.TerminationCondition.optimal:
-            return "F2"
-        print(msg)
+        solver.solve(m, tee=tee)
         solver.options["tol"] = 1e-5
-        result = solver.solve(m, tee=tee)
-        if result.solver.termination_condition != pyo.TerminationCondition.optimal:
-                return "F3"
-        print(msg)
+        solver.solve(m, tee=tee)
         solver.options["tol"] = 1e-6
-        result = solver.solve(m, tee=tee)
-        if result.solver.termination_condition != pyo.TerminationCondition.optimal:
-            return "F4"
-        print(msg)
+        solver.solve(m, tee=tee)
         solver.options["tol"] = 1e-7
-        result = solver.solve(m, tee=tee)
-        if result.solver.termination_condition != pyo.TerminationCondition.optimal:
-            return "F5"
-        print(msg)
+        solver.solve(m, tee=tee)
         solver.options["tol"] = 1e-8
         result = solver.solve(m, tee=tee)
         del solver.options["tol"]
@@ -123,11 +104,11 @@ def solve_once(solver,m,tee=True):
         return "E"
 
 
-flow_mass_values = [27,28,29,30,31,32,33]
+flow_mass_values = [27,28,29,30,31]
 
-def solve_across_flow_mass(solver,flowsheet,msg=""):
+def solve_across_flow_mass(solver,flowsheet):
     standard_results = []
-    increasing_tolerance_results = []
+    jacobian_results = []
 
 
     flow_mass = flowsheet.properties_map.get(366389)
@@ -136,20 +117,15 @@ def solve_across_flow_mass(solver,flowsheet,msg=""):
     store_spec = StoreSpec.value() # store all values, not just fixed, so we init from the same point.
     prev_state = to_json(flowsheet.model, fname=None, return_dict=True, wts=store_spec)
     for value in flow_mass_values:
-        log_message = "" + msg + " - Solving for flow mass value: " + str(value) 
-        print(log_message + " standard solve")
         from_json(flowsheet.model, sd=prev_state, wts=store_spec)
         flow_mass_var.fix(value)
 
         standard_results.append(solve_once(solver,flowsheet.model))
+        jacobian_results.append(jacobian_condition_number(flowsheet.model))
 
-        from_json(flowsheet.model, sd=prev_state, wts=store_spec)
-        flow_mass_var.fix(value)
-        increasing_tolerance_results.append(solve_with_increasing_tolerance(solver,flowsheet.model, msg=log_message))
-    
     # reset to original state
     from_json(flowsheet.model, sd=prev_state, wts=store_spec)
-    return standard_results, increasing_tolerance_results
+    return standard_results, jacobian_results
 
 
 
@@ -166,85 +142,25 @@ with open(os.path.join(__location__, INPUT_FILE), 'r') as file:
 
     dt = DiagnosticsToolbox(m)
     svd_toolbox = dt.prepare_svd_toolbox()
-
-    standard_results = []
-    increasing_tolerance_results = []
-    jacobian_results = []
+    print(jacobian_condition_number(flowsheet.model.fs))
     
-    # SCALE MODEL
-    
-    # dt.display_variables_with_extreme_jacobians()
-    # apply_idaes_auto_scaling(m)
-    
-    headers = ["gradient","equilibriation","none","user-specified","ruiz","idaes auto"]
-    
-    # svd_toolbox.display_underdetermined_variables_and_constraints()
-    # dt.report_numerical_issues()
-    # dt.display_constraints_with_extreme_jacobians()
-
-    #m.obj = pyo.Objective(expr=0)
-    solver = pyo.SolverFactory("ipopt")
-    solver.options["max_iter"] = 1000
-    s, i = solve_across_flow_mass(solver,flowsheet,msg="gradient")
-    jacobian_results.append(jacobian_condition_number(m))
-    standard_results.append(s)
-    increasing_tolerance_results.append(i)
-
-    solver.options["nlp_scaling_method"] = "equilibration-based"
-    s, i = solve_across_flow_mass(solver,flowsheet,msg="equilibration")
-    jacobian_results.append(jacobian_condition_number(m))
-    standard_results.append(s)
-    increasing_tolerance_results.append(i)
-
-    solver.options["nlp_scaling_method"] = "none"
-    s, i = solve_across_flow_mass(solver,flowsheet, msg="none")
-    jacobian_results.append(jacobian_condition_number(m))
-    standard_results.append(s)
-    increasing_tolerance_results.append(i)
-
-
+    solver = get_solver("ipopt")
     apply_manual_scaling(flowsheet)
     solver.options["nlp_scaling_method"] = "user-scaling"
-    s, i = solve_across_flow_mass(solver,flowsheet,msg="user-scaling")
-    jacobian_results.append(jacobian_condition_number(m))
-    standard_results.append(s)
-    increasing_tolerance_results.append(i)
-
-    apply_ruiz_scaling(m)
-    s, i = solve_across_flow_mass(solver,flowsheet,msg="ruiz")
-    jacobian_results.append(jacobian_condition_number(m))
-    standard_results.append(s)
-    increasing_tolerance_results.append(i)
-
-    apply_idaes_auto_scaling(m)
-    s, i = solve_across_flow_mass(solver,flowsheet,msg="auto_scaling")
-    jacobian_results.append(jacobian_condition_number(m))
-    standard_results.append(s)
-    increasing_tolerance_results.append(i)
+    solver.options["max_iter"] = 600
+    s, j = solve_across_flow_mass(solver,flowsheet)
+    print(pd.DataFrame(list(zip(flow_mass_values,s,j)),columns=["flow_mass","success","jacobian"]))
 
 
 
-    print(pd.DataFrame(standard_results, columns=flow_mass_values))
-    print(pd.DataFrame(increasing_tolerance_results, columns=flow_mass_values))
-    print(pd.DataFrame([jacobian_results], columns=headers))
 
+#Parameter Sweep results with normal solver:
 
-
-    # UNO Ipopt options
-    # solver = pyo.SolverFactory("asl", solver="/home/bd65/Downloads/uno/bin/uno_ampl")
-    # solver.options["preset"] = "ipopt"
-    # solver.options["linear_solver"] = "mumps"
-    # UNO options
-    # solver = pyo.SolverFactory("asl", solver="/home/bd65/Downloads/uno/bin/uno_ampl")
-    # solver.options["preset"] = "filtersqp"
-    # # solver.options["QP_solver"] = "BQPD"
-    # results = solver.solve(m, tee=True)
-
-
-    #dt.display_extreme_jacobian_entries()
-
-    # generate_graph(m, graph_path="graph.html")
-
-
-    # print("Starting MCP server at http://127.0.0.1:8005/mcp")
-    # start_mcp_server(m, host="127.0.0.1", port=8005, allow_remote_hosts=True)
+# WARNING: model contains export suffix 'scaling_factor' that contains 5
+# component keys that are not exported as part of the NL file.  Skipping.
+#   success      jacobian
+# 0       E  3.761699e+13
+# 1       F  1.370097e+13
+# 2       S  3.844978e+13
+# 3       F  1.521089e+13
+# 4       F  1.661002e+13
