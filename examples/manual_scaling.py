@@ -31,6 +31,7 @@ from minimise_jacobian_condition import minimize_jacobian_condition
 from idaes.core.util.scaling import constraint_autoscale_large_jac
 from idaes.core.scaling.custom_scaler_base import CustomScalerBase
 from watertap.core.solvers import get_solver
+from idaes.core.util.scaling import calculate_scaling_factors
 
 def apply_manual_scaling(flowsheet):
     m = flowsheet.model
@@ -66,79 +67,5 @@ def apply_manual_scaling(flowsheet):
             set_scaling_factor(var,1e-4)
         if var.local_name == "power":
             set_scaling_factor(var,1e-4)
-    #     # else:
-        #     print("No scaling factor for variable " + var.name)
-    
-    for cons in unscaled_constraints_generator(m):
-        if cons.local_name == "overall_energy_balance[0.0]":
-            set_scaling_factor(cons,1e-8)
-        if cons.local_name == "enthalpy_balances[0.0]":
-            set_scaling_factor(cons,1e-7)
-        if cons.local_name.startswith("enthalpy_mixing_equations"):
-            set_scaling_factor(cons,1e-7)
-        if cons.local_name.startswith("molar_enthalpy_splitting_eqn"):
-            set_scaling_factor(cons,1e-7)
-        if cons.local_name.startswith("heat_duty"):
-            set_scaling_factor(cons,1e-7)
-        if cons.local_name.startswith("ratioP"):
-            set_scaling_factor(cons,1e-5)
-        if cons.local_name.startswith("ratioP_calculation"):
-            set_scaling_factor(cons,1)
-        if cons.local_name.startswith("pressure_balance"):
-            set_scaling_factor(cons,1e-5)
-        if cons.local_name.startswith("equality_constraint"):
-            set_scaling_factor(cons,1e-2)
-        if cons.local_name.startswith("pressure_equality"):
-            set_scaling_factor(cons,1e-4)
-        if cons.local_name.startswith("eq_temperature_bubble"):
-            set_scaling_factor(cons,1e-5)
-        if cons.local_name.startswith("eq_outlet_enth_mol"):
-            set_scaling_factor(cons,1e-4)
-        if cons.local_name.startswith("enth_mol_equality"):
-            set_scaling_factor(cons,1e-4)
-        if cons.local_name.startswith("flow_mol_equality"):
-            set_scaling_factor(cons,1e-3)
-        if cons.local_name.startswith("component_flow_balances"):
-            set_scaling_factor(cons,1e-3)
-        if cons.local_name.startswith("total_flow_balance"):
-            set_scaling_factor(cons,1e-3)
-        if cons.local_name.startswith("deltaP_inverted_constraint"):
-            set_scaling_factor(cons,1e-4)
-        if cons.local_name.startswith("eq_phase_frac"):
-            set_scaling_factor(cons,1e-2)
-        if cons.local_name.startswith("eq_mole_frac_tbub"):
-            set_scaling_factor(cons,1e-3)
-        if cons.local_name.startswith("equilibrium_constraint"):
-            set_scaling_factor(cons,1e-5)
-        if cons.local_name.startswith("eq_outlet_combined_enthalpy"):
-            set_scaling_factor(cons,1e-5)
-        if cons.local_name.startswith("eq_power_out"):
-            set_scaling_factor(cons,1e-5)
-        if cons.local_name.startswith("heat_transfer_equation"):
-            set_scaling_factor(cons,1e-4)
-        if cons.local_name.startswith("unit_heat_balance"):
-            set_scaling_factor(cons,1e-5)
-        if cons.local_name.startswith("saturated_vap_pressure_eq"):
-            set_scaling_factor(cons,1e-5)
-        if cons.local_name.startswith("eq_steam_cooled_pressure"):
-            set_scaling_factor(cons,1e-5)
-        if cons.local_name.startswith("eq_mixed_pressure"):
-            set_scaling_factor(cons,1e-5)
-        if cons.local_name.startswith("eq_outlet_pressure"):
-            set_scaling_factor(cons,1e-5)
-        if cons.local_name.startswith("eq_momentum_balance"):
-            set_scaling_factor(cons,1e-5) # pressure balance
-        if cons.local_name.startswith("intlet_water_momentum_balance"): # tim needs to fix his naming
-            set_scaling_factor(cons,1e-5)
-        if cons.local_name.startswith("ratioP_calculation"):
-            set_scaling_factor(cons,1e-3) # pressure ratio is calculated as a function of pressure.
-        if cons.local_name.startswith("saturated_vap_enthalpy"):
-            set_scaling_factor(cons,1e-5) # pressure ratio is calculated as a function of pressure.
-        if cons.local_name.startswith("overall_momentum_balance"):
-            set_scaling_factor(cons,1e-5) # pressure ratio is calculated as a function of pressure.
-        scaling_factor = get_scaling_factor(cons)
-        # if scaling_factor is not None:
-        #     constraint_scaling_transform(cons, scaling_factor, overwrite=True)
-        
-    for model in flowsheet.unit_models._unit_models.values():
-        model.calculate_scaling_factors()
+
+    calculate_scaling_factors(m)

@@ -143,13 +143,10 @@ def solve_across_flow_mass(solver,flowsheet,msg=""):
 
         standard_results.append(solve_once(solver,flowsheet.model))
 
-        from_json(flowsheet.model, sd=prev_state, wts=store_spec)
-        flow_mass_var.fix(value)
-        increasing_tolerance_results.append(solve_with_increasing_tolerance(solver,flowsheet.model, msg=log_message))
     
     # reset to original state
     from_json(flowsheet.model, sd=prev_state, wts=store_spec)
-    return standard_results, increasing_tolerance_results
+    return standard_results
 
 
 
@@ -168,7 +165,6 @@ with open(os.path.join(__location__, INPUT_FILE), 'r') as file:
     svd_toolbox = dt.prepare_svd_toolbox()
 
     standard_results = []
-    increasing_tolerance_results = []
     jacobian_results = []
     
     # SCALE MODEL
@@ -176,56 +172,58 @@ with open(os.path.join(__location__, INPUT_FILE), 'r') as file:
     # dt.display_variables_with_extreme_jacobians()
     # apply_idaes_auto_scaling(m)
     
-    headers = ["gradient","equilibriation","none","user-specified","ruiz","idaes auto"]
+    headers = ["gradient",]
     
     # svd_toolbox.display_underdetermined_variables_and_constraints()
     # dt.report_numerical_issues()
     # dt.display_constraints_with_extreme_jacobians()
 
     #m.obj = pyo.Objective(expr=0)
+    apply_manual_scaling(flowsheet)
     solver = pyo.SolverFactory("ipopt")
-    solver.options["max_iter"] = 1000
+    solver.options["max_iter"] = 3000
+    solver.options["hessian_approximation"] = "limited-memory"
+    solver.options["nlp_scaling_method"] = "user-scaling"
+    solver.options["mu_strategy"] = "adaptive"
     s, i = solve_across_flow_mass(solver,flowsheet,msg="gradient")
     jacobian_results.append(jacobian_condition_number(m))
     standard_results.append(s)
-    increasing_tolerance_results.append(i)
 
-    solver.options["nlp_scaling_method"] = "equilibration-based"
-    s, i = solve_across_flow_mass(solver,flowsheet,msg="equilibration")
-    jacobian_results.append(jacobian_condition_number(m))
-    standard_results.append(s)
-    increasing_tolerance_results.append(i)
+    # solver.options["nlp_scaling_method"] = "equilibration-based"
+    # s, i = solve_across_flow_mass(solver,flowsheet,msg="equilibration")
+    # jacobian_results.append(jacobian_condition_number(m))
+    # standard_results.append(s)
+    # increasing_tolerance_results.append(i)
 
-    solver.options["nlp_scaling_method"] = "none"
-    s, i = solve_across_flow_mass(solver,flowsheet, msg="none")
-    jacobian_results.append(jacobian_condition_number(m))
-    standard_results.append(s)
-    increasing_tolerance_results.append(i)
+    # solver.options["nlp_scaling_method"] = "none"
+    # s, i = solve_across_flow_mass(solver,flowsheet, msg="none")
+    # jacobian_results.append(jacobian_condition_number(m))
+    # standard_results.append(s)
+    # increasing_tolerance_results.append(i)
 
 
-    apply_manual_scaling(flowsheet)
-    solver.options["nlp_scaling_method"] = "user-scaling"
-    s, i = solve_across_flow_mass(solver,flowsheet,msg="user-scaling")
-    jacobian_results.append(jacobian_condition_number(m))
-    standard_results.append(s)
-    increasing_tolerance_results.append(i)
+    
+    # solver.options["nlp_scaling_method"] = "user-scaling"
+    # s, i = solve_across_flow_mass(solver,flowsheet,msg="user-scaling")
+    # jacobian_results.append(jacobian_condition_number(m))
+    # standard_results.append(s)
+    # increasing_tolerance_results.append(i)
 
-    apply_ruiz_scaling(m)
-    s, i = solve_across_flow_mass(solver,flowsheet,msg="ruiz")
-    jacobian_results.append(jacobian_condition_number(m))
-    standard_results.append(s)
-    increasing_tolerance_results.append(i)
+    # apply_ruiz_scaling(m)
+    # s, i = solve_across_flow_mass(solver,flowsheet,msg="ruiz")
+    # jacobian_results.append(jacobian_condition_number(m))
+    # standard_results.append(s)
+    # increasing_tolerance_results.append(i)
 
-    apply_idaes_auto_scaling(m)
-    s, i = solve_across_flow_mass(solver,flowsheet,msg="auto_scaling")
-    jacobian_results.append(jacobian_condition_number(m))
-    standard_results.append(s)
-    increasing_tolerance_results.append(i)
+    # apply_idaes_auto_scaling(m)
+    # s, i = solve_across_flow_mass(solver,flowsheet,msg="auto_scaling")
+    # jacobian_results.append(jacobian_condition_number(m))
+    # standard_results.append(s)
+    # increasing_tolerance_results.append(i)
 
 
 
     print(pd.DataFrame(standard_results, columns=flow_mass_values))
-    print(pd.DataFrame(increasing_tolerance_results, columns=flow_mass_values))
     print(pd.DataFrame([jacobian_results], columns=headers))
 
 
