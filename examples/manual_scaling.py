@@ -6,7 +6,7 @@ from ahuora_builder_types.flowsheet_schema import FlowsheetSchema
 from idaes.core.util.model_diagnostics import DiagnosticsToolbox
 from idaes_mcp.server import start_mcp_server
 from ahuora_builder.methods.property_map_manipulation import update_property
-from pyomo.environ import SolverFactory
+from pyomo.environ import SolverFactory, Var, Expression
 from idaes.core.solvers.homotopy import homotopy
 from pyomo.contrib.community_detection.community_graph import generate_model_graph
 import networkx as nx
@@ -46,7 +46,7 @@ def apply_manual_scaling(flowsheet):
         if var.local_name == "work":
             set_scaling_factor(var,1e-5)
         if var.local_name == "flow_mol":
-            set_scaling_factor(var,1e-3)
+            set_scaling_factor(var,1e-2)
         if var.local_name == "mole_frac_comp[milk_solid]":
             set_scaling_factor(var,1e3)
         if var.local_name == "mole_frac_comp[water]":
@@ -66,6 +66,14 @@ def apply_manual_scaling(flowsheet):
         if var.local_name == "work[0.0]":
             set_scaling_factor(var,1e-4)
         if var.local_name == "power":
+            set_scaling_factor(var,1e-4)
+        if var.local_name.startswith("overall_heat_transfer_coefficient"):
+            set_scaling_factor(var,1e-4)
+        if var.local_name.startswith("area"):
+            set_scaling_factor(var,1e-2)
+    
+    for var in m.component_data_objects(Expression, descend_into=True):
+        if var.local_name.startswith("enth_mol_phase"):
             set_scaling_factor(var,1e-4)
 
     calculate_scaling_factors(m)

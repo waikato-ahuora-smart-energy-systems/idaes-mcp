@@ -49,6 +49,7 @@ requires-dist = [{ name = "pydantic", specifier = ">=2.12.4" }]
 name = "ahuora-compounds"
 source = { editable = "../Ahuora-Adaptive-Digital-Twin-Platform/backend/ahuora-compounds" }
 dependencies = [
+    { name = "idaes-pse", extra = ["coolprop"] },
     { name = "pydantic" },
     { name = "pyvis" },
     { name = "typing-validation" },
@@ -58,6 +59,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "idaes-pse", marker = "extra == 'ahuora-property-packages'" },
+    { name = "idaes-pse", extras = ["coolprop"], specifier = ">=2.10.0" },
     { name = "pydantic" },
     { name = "pyvis", specifier = ">=0.3.2" },
     { name = "typing-validation" },
@@ -615,6 +617,11 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/21/c8/4814bedbc4d2337eb62572844f1db96c975f5d98beea61d2e4efaa150469/idaes_pse-2.10.0.tar.gz", hash = "sha256:9e547042e12fe34db2e6644259b546bdcc4601bde74fd3053ffdc4a7bee561d5", size = 22317974, upload-time = "2025-12-10T23:30:27.576Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/0f/aa/f577d3254d1ca0c527baefc4b9adc78a50faae3fc94c50ff3d1e1138dffc/idaes_pse-2.10.0-py3-none-any.whl", hash = "sha256:924121848367807c5f7ceec6d8f790e3f0e2581253983490ee128ed66e297ec4", size = 5654390, upload-time = "2025-12-10T23:30:25.865Z" },
+]
+
+[package.optional-dependencies]
+coolprop = [
+    { name = "coolprop" },
 ]
 
 [[package]]

@@ -40,6 +40,7 @@ from idaes.core.scaling.util import (
 )
 import pandas as pd
 from idaes.core.util import to_json, from_json, StoreSpec
+from idaes.core.util.model_statistics import degrees_of_freedom
 
 INPUT_FILE = "json/model.json"
 
@@ -174,18 +175,30 @@ with open(os.path.join(__location__, INPUT_FILE), 'r') as file:
     
     headers = ["gradient",]
     
-    # svd_toolbox.display_underdetermined_variables_and_constraints()
+    
     # dt.report_numerical_issues()
-    # dt.display_constraints_with_extreme_jacobians()
 
     #m.obj = pyo.Objective(expr=0)
     apply_manual_scaling(flowsheet)
+
+    svd_toolbox.display_underdetermined_variables_and_constraints()
+    svd_toolbox.display_constraints_including_variable(m.fs.Preheater_1643423.hot_side.heat[0.0])
+
+    dt.display_variables_with_extreme_jacobians()
+    svd_toolbox.display_constraints_including_variable(m.fs.E2MVRDesup_1645185.inlet_steam_state[0.0].flow_mol)
+
+
+    print(f"jacobian condition number: {jacobian_condition_number(m):.2e}")
+    strip_bounds = pyo.TransformationFactory("contrib.strip_var_bounds")
+    strip_bounds.apply_to(m, reversible=True)
+    print("Degrees of freedom:" , degrees_of_freedom(m))
+
     solver = pyo.SolverFactory("ipopt")
-    solver.options["max_iter"] = 3000
-    solver.options["hessian_approximation"] = "limited-memory"
-    solver.options["nlp_scaling_method"] = "user-scaling"
-    solver.options["mu_strategy"] = "adaptive"
-    s, i = solve_across_flow_mass(solver,flowsheet,msg="gradient")
+    solver.options["max_iter"] = 1000
+    # solver.options["hessian_approximation"] = "limited-memory"
+    # solver.options["nlp_scaling_method"] = "user-scaling"
+    # solver.options["mu_strategy"] = "adaptive"
+    s = solve_across_flow_mass(solver,flowsheet,msg="gradient")
     jacobian_results.append(jacobian_condition_number(m))
     standard_results.append(s)
 
