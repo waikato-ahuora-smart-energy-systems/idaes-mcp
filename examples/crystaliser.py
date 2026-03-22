@@ -43,7 +43,7 @@ def main():
     # now specify the model
     print("DOF before specifying:", degrees_of_freedom(m.fs))
 
-    sf = 600
+    sf = 60
     # Specify the Feed
     m.fs.crystallizer.inlet.flow_mass_phase_comp[0, "Liq", "NaCl"].fix(10.0)
     m.fs.crystallizer.inlet.flow_mass_phase_comp[0, "Liq", "H2O"].fix(68.0)
@@ -66,6 +66,11 @@ def main():
     m.fs.crystallizer.crystal_median_length.fix()
 
     m.fs.crystallizer.height_crystallizer.setub(300) # was 25, doesn't work for big ones?
+    m.fs.crystallizer.height_slurry.setub(300) # was 25, doesn't work for big ones?
+    m.fs.crystallizer.diameter_crystallizer.setub(300) # was 25, doesn't work for big ones?
+    m.fs.crystallizer.magma_circulation_flow_vol.setub(1000) # was 100, doesn't work for large crystallizers
+    m.fs.crystallizer.work_mechanical.setub(500_000_000) # was 5000_000, doesn't work for large crystallizers
+
 
     # # Scaling
     m.fs.properties.set_default_scaling(
@@ -83,20 +88,20 @@ def main():
     iscale.calculate_scaling_factors(m.fs)
 
 
-    m.fs.helmholtz = build_package("helmholtz",["water"],["Liq","Vap"])
-    m.fs.vapor_out = m.fs.helmholtz.build_state_block(m.fs.time)
+    # m.fs.helmholtz = build_package("helmholtz",["water"],["Liq","Vap"])
+    # m.fs.vapor_out = m.fs.helmholtz.build_state_block(m.fs.time)
 
-    @m.fs.Constraint(m.fs.time)
-    def eq_vapor_temp_out(blk, t):
-        return m.fs.vapor_out[t].temperature == m.fs.crystallizer.properties_vapor[t].temperature
+    # @m.fs.Constraint(m.fs.time)
+    # def eq_vapor_temp_out(blk, t):
+    #     return m.fs.vapor_out[t].temperature == m.fs.crystallizer.properties_vapor[t].temperature
     
-    @m.fs.Constraint(m.fs.time)
-    def eq_vapor_pressure_out(blk, t):
-        return m.fs.vapor_out[t].pressure == m.fs.crystallizer.properties_vapor[t].pressure
+    # @m.fs.Constraint(m.fs.time)
+    # def eq_vapor_pressure_out(blk, t):
+    #     return m.fs.vapor_out[t].pressure == m.fs.crystallizer.properties_vapor[t].pressure
     
-    @m.fs.Constraint(m.fs.time)
-    def eq_vapor_flow_out(blk, t):
-        return m.fs.vapor_out[t].flow_mass == m.fs.crystallizer.properties_vapor[t].flow_mass_phase_comp["Vap", "H2O"]
+    # @m.fs.Constraint(m.fs.time)
+    # def eq_vapor_flow_out(blk, t):
+    #     return m.fs.vapor_out[t].flow_mass == m.fs.crystallizer.properties_vapor[t].flow_mass_phase_comp["Vap", "H2O"]
 
     
 
@@ -115,8 +120,8 @@ def main():
 
     m.fs.crystallizer.inlet.flow_mass_phase_comp[0, "Liq", "NaCl"].fix(10.0 * sf)
     m.fs.crystallizer.inlet.flow_mass_phase_comp[0, "Liq", "H2O"].fix(68.0* sf)
-    m.fs.crystallizer.inlet.flow_mass_phase_comp[0, "Sol", "NaCl"].fix(1e-6* sf)
-    m.fs.crystallizer.inlet.flow_mass_phase_comp[0, "Vap", "H2O"].fix(1e-6* sf)
+    m.fs.crystallizer.inlet.flow_mass_phase_comp[0, "Sol", "NaCl"].fix(1e-3* sf)
+    m.fs.crystallizer.inlet.flow_mass_phase_comp[0, "Vap", "H2O"].fix(1e-3* sf)
     m.fs.crystallizer.solids.flow_mass_phase_comp[0, "Sol", "NaCl"].fix(5.56* sf)
 
     try:
@@ -127,6 +132,7 @@ def main():
     m.fs.crystallizer.report()
 
     # m.fs.crystallizer.display()
+    # Adjusting bounds is crucial to see how things work if you are trying to scale things up
     #dt.display_variables_near_bounds()
 
 
