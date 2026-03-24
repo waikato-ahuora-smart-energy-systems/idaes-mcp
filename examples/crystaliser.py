@@ -68,7 +68,7 @@ def main():
 
     # Specify the Feed
     m.fs.c1.inlet.pressure[0].fix(2.5e5)
-    m.fs.c1.inlet.temperature[0].fix(273.15 + 20)
+    m.fs.c1.inlet.temperature[0].fix(273.15 + 115)
     mass_nacl, mass_h2o = calc_mass_fractions([8045/3600, 4643/3600], [0.27, 0.27])
     m.fs.c1.inlet.flow_mass_phase_comp[0, "Liq", "NaCl"].fix(mass_nacl)
     m.fs.c1.inlet.flow_mass_phase_comp[0, "Liq", "H2O"].fix(mass_h2o)
@@ -87,7 +87,7 @@ def main():
 
     # Specify the Feed
     m.fs.c2.inlet.pressure[0].fix(1.4e5)
-    m.fs.c2.inlet.temperature[0].fix(273.15 + 20)
+    m.fs.c2.inlet.temperature[0].fix(273.15 + 90)
     # Feed from B evap, B evap leg, and purge is all mixed together as inlet.
     mass_nacl, mass_h2o = calc_mass_fractions([7376/3600, 4301/3600, 1519/3600], [0.27, 0.27, 0.31])
     m.fs.c2.inlet.flow_mass_phase_comp[0, "Liq", "NaCl"].fix(mass_nacl)
