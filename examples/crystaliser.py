@@ -12,6 +12,7 @@
 from pyomo.environ import (
     ConcreteModel,
     TerminationCondition,
+    TransformationFactory
 )
 import pyomo.environ as pyo
 from pyomo.util.check_units import assert_units_consistent
@@ -30,7 +31,9 @@ from watertap.costing import WaterTAPCosting, CrystallizerCostType
 from idaes.core.util import DiagnosticsToolbox
 from ahuora_property_packages.build_package import build_package
 from watertap.property_models.NaCl_prop_pack import NaClParameterBlock
-
+from idaes.models.unit_models.separator import Separator, SplittingType
+from idaes.models.unit_models.mixer import Mixer
+from pyomo.network import Arc, SequentialDecomposition
 # From http://github.com/watertap-org/watertap/blob/8cce4013f9f9b137f8aa995da6e59e258319e8b7/watertap/flowsheets/crystallization/sim_simple_crystallizer.py#L4
 
 def set_bounds(crystallizer):
@@ -62,42 +65,59 @@ def main():
     ####################################################
     # Crystallizer 5
     ####################################################
-    m.fs.c1 = Crystallization(property_package=m.fs.properties)
-    set_bounds(m.fs.c1)
-    fix_constants(m.fs.c1)
+    m.fs.c5 = Crystallization(property_package=m.fs.properties)
+    set_bounds(m.fs.c5)
+    fix_constants(m.fs.c5)
 
     # Specify the Feed
-    m.fs.c1.inlet.pressure[0].fix(0.3e5)
-    m.fs.c1.inlet.temperature[0].fix(273.15 + 46.1) # technically this would be slightly hotter as the purge is quite hot.
-    mass_nacl, mass_h2o = calc_mass_fractions([4743/3600, 3557/3600, 2318], [0.25, 0.25, 0.31]) # Brine to E103, Brine to E103 e-leg, and purge to E103
-    m.fs.c1.inlet.flow_mass_phase_comp[0, "Liq", "NaCl"].fix(mass_nacl)
-    m.fs.c1.inlet.flow_mass_phase_comp[0, "Liq", "H2O"].fix(mass_h2o)
-    m.fs.c1.inlet.flow_mass_phase_comp[0, "Sol", "NaCl"].fix(1e-3)
-    m.fs.c1.inlet.flow_mass_phase_comp[0, "Vap", "H2O"].fix(1e-3)
+    
+    mass_c5_nacl, mass_c5_h2o = calc_mass_fractions([4743/3600, 3557/3600], [0.25, 0.25]) # Brine to E103, Brine to E103 e-leg, and purge to E103
+
     # Specify the operating conditions
-    m.fs.c1.pressure_operating.fix(0.3e5) # 0.3 bar
-    m.fs.c1.vapor.flow_mass_phase_comp[0, "Vap", "H2O"].fix(mass_h2o -  mass_nacl / 2) # remove enough vapor for 66% nacl wt% slurry, i.e the amount of water left is half the amount of nacl.
+    m.fs.c5.pressure_operating.fix(0.3e5) # 0.3 bar
+    m.fs.c5.vapor.flow_mass_phase_comp[0, "Vap", "H2O"].fix(mass_c5_h2o -  mass_c5_nacl / 2) # remove enough vapor for 66% nacl wt% slurry, i.e the amount of water left is half the amount of nacl.
+    # TODO: update this as this no longer takes into account the purge.
+
 
     ####################################################
     # Crystallizer 4
     ####################################################
-    m.fs.c2 = Crystallization(property_package=m.fs.properties)
-    set_bounds(m.fs.c2)
-    fix_constants(m.fs.c2)
+    m.fs.c4 = Crystallization(property_package=m.fs.properties)
+    set_bounds(m.fs.c4)
+    fix_constants(m.fs.c4)
 
     # Specify the Feed
-    m.fs.c2.inlet.pressure[0].fix(0.45e5)
-    m.fs.c2.inlet.temperature[0].fix(273.15 + 90)
+    m.fs.c4.inlet.pressure[0].fix(0.45e5)
+    m.fs.c4.inlet.temperature[0].fix(273.15 + 90)
     # Feed from B evap, B evap leg, and purge is all mixed together as inlet.
-    mass_nacl, mass_h2o = calc_mass_fractions([3873/3600, 2750/3600, 4209/3600], [0.27, 0.27, 0.31])
-    m.fs.c2.inlet.flow_mass_phase_comp[0, "Liq", "NaCl"].fix(mass_nacl)
-    m.fs.c2.inlet.flow_mass_phase_comp[0, "Liq", "H2O"].fix(mass_h2o)
-    m.fs.c2.inlet.flow_mass_phase_comp[0, "Sol", "NaCl"].fix(1e-3)
-    m.fs.c2.inlet.flow_mass_phase_comp[0, "Vap", "H2O"].fix(1e-3)
+    mass_c4_nacl, mass_c4_h2o = calc_mass_fractions([3873/3600, 2750/3600, 4209/3600], [0.27, 0.27, 0.31])
+    m.fs.c4.inlet.flow_mass_phase_comp[0, "Liq", "NaCl"].fix(mass_c4_nacl)
+    m.fs.c4.inlet.flow_mass_phase_comp[0, "Liq", "H2O"].fix(mass_c4_h2o)
+    m.fs.c4.inlet.flow_mass_phase_comp[0, "Sol", "NaCl"].fix(1e-3)
+    m.fs.c4.inlet.flow_mass_phase_comp[0, "Vap", "H2O"].fix(1e-3)
     # Specify the operating conditions
-    m.fs.c2.pressure_operating.fix(0.45e5) # 0.45 bar
-    m.fs.c2.vapor.flow_mass_phase_comp[0, "Vap", "H2O"].fix(mass_h2o -  mass_nacl / 2) 
+    m.fs.c4.pressure_operating.fix(0.45e5) # 0.45 bar
+    m.fs.c4.vapor.flow_mass_phase_comp[0, "Vap", "H2O"].fix(mass_c4_h2o -  mass_c4_nacl / 2) 
 
+    m.fs.c4_purge = Separator(property_package=m.fs.properties, split_basis=SplittingType.totalFlow)
+    m.fs.c4_purge.split_fraction[0,"outlet_1"].fix(0.35) # 35% of the feed from crystalliser 4 is purged to c5
+    m.fs.c5_mixer = Mixer(property_package=m.fs.properties)
+    m.fs.c5_mixer.inlet_1.flow_mass_phase_comp[0, "Liq", "NaCl"].fix(mass_c5_nacl)
+    m.fs.c5_mixer.inlet_1.flow_mass_phase_comp[0, "Liq", "H2O"].fix(mass_c5_h2o)
+    m.fs.c5_mixer.inlet_1.flow_mass_phase_comp[0, "Sol", "NaCl"].fix(1e-3)
+    m.fs.c5_mixer.inlet_1.flow_mass_phase_comp[0, "Vap", "H2O"].fix(1e-3)
+    m.fs.c5_mixer.inlet_1.pressure[0].fix(0.3e5)
+    m.fs.c5_mixer.inlet_1.temperature[0].fix(273.15 + 46.1) # technically this would be slightly hotter as the purge is quite hot.
+
+    #################################################
+    # ARCS
+    #################################################
+    m.fs.c4_to_c4_purge = Arc(source=m.fs.c4.outlet, destination=m.fs.c4_purge.inlet)
+    m.fs.c4_purge_to_c5_mixer = Arc(source=m.fs.c4_purge.outlet_1, destination=m.fs.c5_mixer.inlet_2)
+    m.fs.c5_mixer_to_c5 = Arc(source=m.fs.c5_mixer.outlet, destination=m.fs.c5.inlet)
+    TransformationFactory("network.expand_arcs").apply_to(m)
+
+    print("Degrees of freedom before solving: ", degrees_of_freedom(m))
     #################################################
     # # Scaling
     #################################################
@@ -120,9 +140,19 @@ def main():
     #   Initialisation
     ################################################
     dt = DiagnosticsToolbox(m)
+    dt.display_underconstrained_set()
     # solving
-    m.fs.c1.initialize(outlvl=idaeslog.INFO_LOW)
-    m.fs.c2.initialize(outlvl=idaeslog.INFO_LOW)
+
+    def init_unit(unit):
+        print(f"Initializing {unit.name}...")
+        try:
+            unit.initialize(outlvl=idaeslog.INFO_LOW)
+        except Exception as e:
+            print(f"Initialization failed for {unit.name} with error: {e}")
+    seq = SequentialDecomposition(tol=1.0E-3)
+    seq.set_tear_set([]) # no tear streams in this case
+    seq.run(m,init_unit)
+
     assert_units_consistent(m)  # check that units are consistent
     assert degrees_of_freedom(m) == 0
     solver = get_solver()
