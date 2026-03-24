@@ -58,7 +58,7 @@ def main():
     m.fs = FlowsheetBlock(dynamic=False)
     # attach property package
     m.fs.properties = props.NaClParameterBlock()
-    
+
     ####################################################
     # Crystallizer 1
     ####################################################
@@ -67,7 +67,7 @@ def main():
     fix_constants(m.fs.c1)
 
     # Specify the Feed
-    m.fs.c1.inlet.pressure[0].fix(141325)
+    m.fs.c1.inlet.pressure[0].fix(2.5e5)
     m.fs.c1.inlet.temperature[0].fix(273.15 + 20)
     mass_nacl, mass_h2o = calc_mass_fractions([8045/3600, 4643/3600], [0.27, 0.27])
     m.fs.c1.inlet.flow_mass_phase_comp[0, "Liq", "NaCl"].fix(mass_nacl)
@@ -75,8 +75,28 @@ def main():
     m.fs.c1.inlet.flow_mass_phase_comp[0, "Sol", "NaCl"].fix(1e-3)
     m.fs.c1.inlet.flow_mass_phase_comp[0, "Vap", "H2O"].fix(1e-3)
     # Specify the operating conditions
-    m.fs.c1.pressure_operating.fix(1.4e5)
-    m.fs.c1.vapor.flow_mass_phase_comp[0, "Vap", "H2O"].fix((8045 + 4643) / 3600 * 0.73 -  (8045 + 4643) / 3600 * 0.27 / 2)
+    m.fs.c1.pressure_operating.fix(2.5e5) # 2.5 bar
+    m.fs.c1.vapor.flow_mass_phase_comp[0, "Vap", "H2O"].fix(mass_h2o -  mass_nacl / 2) # remove enough vapor for 66% nacl wt% slurry, i.e the amount of water left is half the amount of nacl.
+
+    ####################################################
+    # Crystallizer 2
+    ####################################################
+    m.fs.c2 = Crystallization(property_package=m.fs.properties)
+    set_bounds(m.fs.c2)
+    fix_constants(m.fs.c2)
+
+    # Specify the Feed
+    m.fs.c2.inlet.pressure[0].fix(1.4e5)
+    m.fs.c2.inlet.temperature[0].fix(273.15 + 20)
+    # Feed from B evap, B evap leg, and purge is all mixed together as inlet.
+    mass_nacl, mass_h2o = calc_mass_fractions([7376/3600, 4301/3600, 1519/3600], [0.27, 0.27, 0.31])
+    m.fs.c2.inlet.flow_mass_phase_comp[0, "Liq", "NaCl"].fix(mass_nacl)
+    m.fs.c2.inlet.flow_mass_phase_comp[0, "Liq", "H2O"].fix(mass_h2o)
+    m.fs.c2.inlet.flow_mass_phase_comp[0, "Sol", "NaCl"].fix(1e-3)
+    m.fs.c2.inlet.flow_mass_phase_comp[0, "Vap", "H2O"].fix(1e-3)
+    # Specify the operating conditions
+    m.fs.c2.pressure_operating.fix(1.4e5) # 1.4 bar
+    m.fs.c2.vapor.flow_mass_phase_comp[0, "Vap", "H2O"].fix(mass_h2o -  mass_nacl / 2) 
 
     #################################################
     # # Scaling
@@ -102,6 +122,7 @@ def main():
     dt = DiagnosticsToolbox(m)
     # solving
     m.fs.c1.initialize(outlvl=idaeslog.INFO_LOW)
+    m.fs.c2.initialize(outlvl=idaeslog.INFO_LOW)
     assert_units_consistent(m)  # check that units are consistent
     assert degrees_of_freedom(m) == 0
     solver = get_solver()
@@ -111,9 +132,9 @@ def main():
         assert results.solver.termination_condition == TerminationCondition.optimal
     except Exception as e:
         print(e)
-    print(pyo.value(m.fs.c1.product_volumetric_solids_fraction))
 
     m.fs.c1.report()
+    m.fs.c2.report()
 
     # m.fs.c1.display()
     # Adjusting bounds is crucial to see how things work if you are trying to scale things up
