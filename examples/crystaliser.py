@@ -33,48 +33,55 @@ from watertap.property_models.NaCl_prop_pack import NaClParameterBlock
 
 # From http://github.com/watertap-org/watertap/blob/8cce4013f9f9b137f8aa995da6e59e258319e8b7/watertap/flowsheets/crystallization/sim_simple_crystallizer.py#L4
 
+def set_bounds(crystallizer):
+    # Bounds adjustment
+    crystallizer.height_crystallizer.setub(300) # was 25, doesn't work for big ones?
+    crystallizer.height_slurry.setub(300) # was 25, doesn't work for big ones?
+    crystallizer.diameter_crystallizer.setub(300) # was 25, doesn't work for big ones?
+    crystallizer.magma_circulation_flow_vol.setub(1000) # was 100, doesn't work for large crystallizers
+    crystallizer.work_mechanical.setub(500_000_000) # was 5000_000, doesn't work for large crystallizers
+
+def fix_constants(crystallizer):
+    # Fix
+    crystallizer.crystal_growth_rate.fix()
+    crystallizer.souders_brown_constant.fix()
+    crystallizer.crystal_median_length.fix()
+
+def calc_mass_fractions(total_mass : list[float], X_NaCl : list[float]):
+    # from a list of total mass and corresponding mass fractions, calculate the mass of each component
+    mass_NaCl = sum([total * x for total, x in zip(total_mass, X_NaCl)])
+    mass_H2O = sum([total * (1 - x) for total, x in zip(total_mass, X_NaCl)])
+    return mass_NaCl, mass_H2O
+
 def main():
     m = ConcreteModel()
     m.fs = FlowsheetBlock(dynamic=False)
     # attach property package
     m.fs.properties = props.NaClParameterBlock()
-    # build the unit model
+    
+    ####################################################
+    # Crystallizer 1
+    ####################################################
     m.fs.c1 = Crystallization(property_package=m.fs.properties)
+    set_bounds(m.fs.c1)
+    fix_constants(m.fs.c1)
 
-    # now specify the model
-    print("DOF before specifying:", degrees_of_freedom(m.fs))
-
-    sf = 6
     # Specify the Feed
     m.fs.c1.inlet.pressure[0].fix(141325)
     m.fs.c1.inlet.temperature[0].fix(273.15 + 20)
-    m.fs.c1.inlet.flow_mass_phase_comp[0, "Liq", "NaCl"].fix((8045 + 4643) / 3600 * 0.27)
-    m.fs.c1.inlet.flow_mass_phase_comp[0, "Liq", "H2O"].fix((8045 + 4643) / 3600 * 0.73)
+    mass_nacl, mass_h2o = calc_mass_fractions([8045/3600, 4643/3600], [0.27, 0.27])
+    m.fs.c1.inlet.flow_mass_phase_comp[0, "Liq", "NaCl"].fix(mass_nacl)
+    m.fs.c1.inlet.flow_mass_phase_comp[0, "Liq", "H2O"].fix(mass_h2o)
     m.fs.c1.inlet.flow_mass_phase_comp[0, "Sol", "NaCl"].fix(1e-3)
     m.fs.c1.inlet.flow_mass_phase_comp[0, "Vap", "H2O"].fix(1e-3)
-    
-
-    print("DOF after specifying feed:", degrees_of_freedom(m.fs))
-    ##########################################
-    # # Case 1: Fix crystallizer temperature
-    ##########################################
+    # Specify the operating conditions
     m.fs.c1.pressure_operating.fix(1.4e5)
     m.fs.c1.vapor.flow_mass_phase_comp[0, "Vap", "H2O"].fix((8045 + 4643) / 3600 * 0.73 -  (8045 + 4643) / 3600 * 0.27 / 2)
 
-
-    # Fix
-    m.fs.c1.crystal_growth_rate.fix()
-    m.fs.c1.souders_brown_constant.fix()
-    m.fs.c1.crystal_median_length.fix()
-
-    # Bounds adjustment
-    m.fs.c1.height_crystallizer.setub(300) # was 25, doesn't work for big ones?
-    m.fs.c1.height_slurry.setub(300) # was 25, doesn't work for big ones?
-    m.fs.c1.diameter_crystallizer.setub(300) # was 25, doesn't work for big ones?
-    m.fs.c1.magma_circulation_flow_vol.setub(1000) # was 100, doesn't work for large crystallizers
-    m.fs.c1.work_mechanical.setub(500_000_000) # was 5000_000, doesn't work for large crystallizers
-
+    #################################################
     # # Scaling
+    #################################################
+    sf = 6
     m.fs.properties.set_default_scaling(
         "flow_mass_phase_comp", 1e-2* sf, index=("Liq", "H2O")
     )
@@ -89,12 +96,12 @@ def main():
     )
     iscale.calculate_scaling_factors(m.fs)
 
-    
-
-
+    ################################################
+    #   Initialisation
+    ################################################
     dt = DiagnosticsToolbox(m)
     # solving
-    m.fs.c1.initialize(outlvl=idaeslog.DEBUG)
+    m.fs.c1.initialize(outlvl=idaeslog.INFO_LOW)
     assert_units_consistent(m)  # check that units are consistent
     assert degrees_of_freedom(m) == 0
     solver = get_solver()
