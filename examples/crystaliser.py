@@ -60,42 +60,42 @@ def main():
     m.fs.properties = props.NaClParameterBlock()
 
     ####################################################
-    # Crystallizer 1
+    # Crystallizer 5
     ####################################################
     m.fs.c1 = Crystallization(property_package=m.fs.properties)
     set_bounds(m.fs.c1)
     fix_constants(m.fs.c1)
 
     # Specify the Feed
-    m.fs.c1.inlet.pressure[0].fix(2.5e5)
-    m.fs.c1.inlet.temperature[0].fix(273.15 + 115)
-    mass_nacl, mass_h2o = calc_mass_fractions([8045/3600, 4643/3600], [0.27, 0.27])
+    m.fs.c1.inlet.pressure[0].fix(0.3e5)
+    m.fs.c1.inlet.temperature[0].fix(273.15 + 46.1) # technically this would be slightly hotter as the purge is quite hot.
+    mass_nacl, mass_h2o = calc_mass_fractions([4743/3600, 3557/3600, 2318], [0.25, 0.25, 0.31]) # Brine to E103, Brine to E103 e-leg, and purge to E103
     m.fs.c1.inlet.flow_mass_phase_comp[0, "Liq", "NaCl"].fix(mass_nacl)
     m.fs.c1.inlet.flow_mass_phase_comp[0, "Liq", "H2O"].fix(mass_h2o)
     m.fs.c1.inlet.flow_mass_phase_comp[0, "Sol", "NaCl"].fix(1e-3)
     m.fs.c1.inlet.flow_mass_phase_comp[0, "Vap", "H2O"].fix(1e-3)
     # Specify the operating conditions
-    m.fs.c1.pressure_operating.fix(2.5e5) # 2.5 bar
+    m.fs.c1.pressure_operating.fix(0.3e5) # 0.3 bar
     m.fs.c1.vapor.flow_mass_phase_comp[0, "Vap", "H2O"].fix(mass_h2o -  mass_nacl / 2) # remove enough vapor for 66% nacl wt% slurry, i.e the amount of water left is half the amount of nacl.
 
     ####################################################
-    # Crystallizer 2
+    # Crystallizer 4
     ####################################################
     m.fs.c2 = Crystallization(property_package=m.fs.properties)
     set_bounds(m.fs.c2)
     fix_constants(m.fs.c2)
 
     # Specify the Feed
-    m.fs.c2.inlet.pressure[0].fix(1.4e5)
+    m.fs.c2.inlet.pressure[0].fix(0.45e5)
     m.fs.c2.inlet.temperature[0].fix(273.15 + 90)
     # Feed from B evap, B evap leg, and purge is all mixed together as inlet.
-    mass_nacl, mass_h2o = calc_mass_fractions([7376/3600, 4301/3600, 1519/3600], [0.27, 0.27, 0.31])
+    mass_nacl, mass_h2o = calc_mass_fractions([3873/3600, 2750/3600, 4209/3600], [0.27, 0.27, 0.31])
     m.fs.c2.inlet.flow_mass_phase_comp[0, "Liq", "NaCl"].fix(mass_nacl)
     m.fs.c2.inlet.flow_mass_phase_comp[0, "Liq", "H2O"].fix(mass_h2o)
     m.fs.c2.inlet.flow_mass_phase_comp[0, "Sol", "NaCl"].fix(1e-3)
     m.fs.c2.inlet.flow_mass_phase_comp[0, "Vap", "H2O"].fix(1e-3)
     # Specify the operating conditions
-    m.fs.c2.pressure_operating.fix(1.4e5) # 1.4 bar
+    m.fs.c2.pressure_operating.fix(0.45e5) # 0.45 bar
     m.fs.c2.vapor.flow_mass_phase_comp[0, "Vap", "H2O"].fix(mass_h2o -  mass_nacl / 2) 
 
     #################################################
