@@ -99,9 +99,9 @@ def main():
     m.fs.c4.pressure_operating.fix(0.45e5) # 0.45 bar
     m.fs.c4.vapor.flow_mass_phase_comp[0, "Vap", "H2O"].fix(mass_c4_h2o -  mass_c4_nacl / 2) 
 
-    m.fs.c4_purge = Separator(property_package=m.fs.properties, split_basis=SplittingType.totalFlow)
+    m.fs.c4_purge = Separator(property_package=m.fs.properties, split_basis=SplittingType.totalFlow, material_balance_type="componentPhase")
     m.fs.c4_purge.split_fraction[0,"outlet_1"].fix(0.35) # 35% of the feed from crystalliser 4 is purged to c5
-    m.fs.c5_mixer = Mixer(property_package=m.fs.properties)
+    m.fs.c5_mixer = Mixer(property_package=m.fs.properties, material_balance_type="componentPhase")
     m.fs.c5_mixer.inlet_1.flow_mass_phase_comp[0, "Liq", "NaCl"].fix(mass_c5_nacl)
     m.fs.c5_mixer.inlet_1.flow_mass_phase_comp[0, "Liq", "H2O"].fix(mass_c5_h2o)
     m.fs.c5_mixer.inlet_1.flow_mass_phase_comp[0, "Sol", "NaCl"].fix(1e-3)
@@ -163,8 +163,8 @@ def main():
     except Exception as e:
         print(e)
 
-    m.fs.c1.report()
-    m.fs.c2.report()
+    m.fs.c4.report()
+    m.fs.c5.report()
 
     # m.fs.c1.display()
     # Adjusting bounds is crucial to see how things work if you are trying to scale things up
