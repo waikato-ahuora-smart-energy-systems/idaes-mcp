@@ -196,7 +196,7 @@ with open(os.path.join(__location__, INPUT_FILE), 'r') as file:
     solver = pyo.SolverFactory("ipopt")
     solver.options["max_iter"] = 1000
     # solver.options["hessian_approximation"] = "limited-memory"
-    # solver.options["nlp_scaling_method"] = "user-scaling"
+    solver.options["nlp_scaling_method"] = "user-scaling"
     # solver.options["mu_strategy"] = "adaptive"
     s = solve_across_flow_mass(solver,flowsheet,msg="gradient")
     jacobian_results.append(jacobian_condition_number(m))

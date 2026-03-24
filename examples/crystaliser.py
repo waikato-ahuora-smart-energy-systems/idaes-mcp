@@ -13,6 +13,7 @@ from pyomo.environ import (
     ConcreteModel,
     TerminationCondition,
 )
+import pyomo.environ as pyo
 from pyomo.util.check_units import assert_units_consistent
 
 from idaes.core import FlowsheetBlock
@@ -43,7 +44,7 @@ def main():
     # now specify the model
     print("DOF before specifying:", degrees_of_freedom(m.fs))
 
-    sf = 60
+    sf = 6
     # Specify the Feed
     m.fs.crystallizer.inlet.flow_mass_phase_comp[0, "Liq", "NaCl"].fix(10.0)
     m.fs.crystallizer.inlet.flow_mass_phase_comp[0, "Liq", "H2O"].fix(68.0)
@@ -65,6 +66,7 @@ def main():
     m.fs.crystallizer.souders_brown_constant.fix()
     m.fs.crystallizer.crystal_median_length.fix()
 
+    # Bounds adjustment
     m.fs.crystallizer.height_crystallizer.setub(300) # was 25, doesn't work for big ones?
     m.fs.crystallizer.height_slurry.setub(300) # was 25, doesn't work for big ones?
     m.fs.crystallizer.diameter_crystallizer.setub(300) # was 25, doesn't work for big ones?
@@ -118,18 +120,33 @@ def main():
     # m.fs.crystallizer.display()
     # dt.display_variables_near_bounds()
 
-    m.fs.crystallizer.inlet.flow_mass_phase_comp[0, "Liq", "NaCl"].fix(10.0 * sf)
-    m.fs.crystallizer.inlet.flow_mass_phase_comp[0, "Liq", "H2O"].fix(68.0* sf)
-    m.fs.crystallizer.inlet.flow_mass_phase_comp[0, "Sol", "NaCl"].fix(1e-3* sf)
-    m.fs.crystallizer.inlet.flow_mass_phase_comp[0, "Vap", "H2O"].fix(1e-3* sf)
-    m.fs.crystallizer.solids.flow_mass_phase_comp[0, "Sol", "NaCl"].fix(5.56* sf)
+    m.fs.crystallizer.inlet.flow_mass_phase_comp[0, "Liq", "NaCl"].fix((8045 + 4643) / 3600 * 0.27)
+    m.fs.crystallizer.inlet.flow_mass_phase_comp[0, "Liq", "H2O"].fix((8045 + 4643) / 3600 * 0.73)
+    m.fs.crystallizer.inlet.flow_mass_phase_comp[0, "Sol", "NaCl"].fix(1e-3)
+    m.fs.crystallizer.inlet.flow_mass_phase_comp[0, "Vap", "H2O"].fix(1e-3)
+    #m.fs.crystallizer.solids.flow_mass_phase_comp[0, "Sol", "NaCl"].fix((4658)/3600 * 0.66 ) # This has to be slightly less than in the calcs, as there needs to be a trace amount in the liquid outlet.
+    # would be better to fix the liquid outlet to 1e-6 abd calculate the solids outlet.
+    m.fs.crystallizer.solids.flow_mass_phase_comp[0, "Sol", "NaCl"].unfix()
+    
+    #m.fs.crystallizer.outlet.flow_mass_phase_comp[0, "Liq", "NaCl"].fix(1e-3)
+    m.fs.crystallizer.vapor.flow_mass_phase_comp[0, "Vap", "H2O"].fix((8045 + 4643) / 3600 * 0.73 -  (8045 + 4643) / 3600 * 0.27 / 2)
 
+    @m.fs.Expression(m.fs.time)
+    def ratio_salt(blk, t):
+        # Constrain that 66% of the slurry (solid and liquid) is salt, meaning the rest of the water is vapor
+        return (m.fs.crystallizer.outlet.flow_mass_phase_comp[t, "Liq", "NaCl"] + m.fs.crystallizer.solids.flow_mass_phase_comp[t, "Sol", "NaCl"]) / (
+            m.fs.crystallizer.outlet.flow_mass_phase_comp[t, "Liq", "NaCl"] + m.fs.crystallizer.solids.flow_mass_phase_comp[t, "Sol", "NaCl"] + m.fs.crystallizer.outlet.flow_mass_phase_comp[t, "Liq", "H2O"]
+        ) 
+    #m.fs.crystallizer.product_volumetric_solids_fraction.fix(0.9)
     try:
         results = solver.solve(m,tee=False, symbolic_solver_labels=True)
         assert results.solver.termination_condition == TerminationCondition.optimal
     except Exception as e:
         print(e)
+    print(pyo.value(m.fs.crystallizer.product_volumetric_solids_fraction))
+
     m.fs.crystallizer.report()
+    print(pyo.value(m.fs.ratio_salt[0]))
 
     # m.fs.crystallizer.display()
     # Adjusting bounds is crucial to see how things work if you are trying to scale things up
